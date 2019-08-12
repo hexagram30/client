@@ -12,4 +12,4 @@ specs = "0.15.0"
 specs-derive = "0.4.0"
 
 [workspace]
-members = [ "chapter-01-hellorust", "chapter-02-helloecs" ]
+members = [ "chapter-01-hellorust", "chapter-02-helloecs", "chapter-03-walkmap" ]
