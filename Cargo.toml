@@ -19,5 +19,6 @@ members = [
     "chapter-04-newmap",
     "chapter-05-fov",
     "chapter-06-monsters",
-    "chapter-07-damage"
+    "chapter-07-damage",
+    "chapter-08-ui"
     ]
