@@ -1,0 +1,8 @@
+[package]
+name = "explore1"
+version = "0.1.0"
+authors = ["Duncan McGreggor <oubiwann@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rltk = { version = "0.6.2" }
