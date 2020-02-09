@@ -26,8 +26,6 @@ pub struct Player {
     pub chr: char,
     pub fg_color: (u8,u8,u8),
     pub bg_color: (u8,u8,u8),
-    pub init_x: i32,
-    pub init_y: i32,
 }
 
 #[derive(Debug, Deserialize)]
