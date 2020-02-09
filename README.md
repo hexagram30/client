@@ -1,2 +1,4 @@
 # tech-reflects
-Projects for Experiential Reflections on Technology
+
+*Projects for Experiential Reflections on Technology*
+
