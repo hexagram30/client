@@ -1,0 +1,15 @@
+name: build
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build Exploration 1
+      run: cd explore1 && cargo build
+    - name: Run tests
+      run: cd explore1 && cargo test
