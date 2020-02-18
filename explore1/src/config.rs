@@ -1,7 +1,7 @@
 use cfglib;
-use serde::{Deserialize};
+use serde::Deserialize;
 
-use twyg::{LoggerOpts};
+use twyg::LoggerOpts;
 
 const ENV_PREFIX: &str = "EXP";
 const CONFIG_FILE: &str = "config";
@@ -15,8 +15,8 @@ pub struct Game {
 pub struct NPCs {
     pub count: i32,
     pub chr: char,
-    pub fg_color: (u8,u8,u8),
-    pub bg_color: (u8,u8,u8),
+    pub fg_color: (u8, u8, u8),
+    pub bg_color: (u8, u8, u8),
     pub init_x: i32,
     pub init_y: i32,
 }
@@ -24,8 +24,8 @@ pub struct NPCs {
 #[derive(Debug, Deserialize)]
 pub struct Player {
     pub chr: char,
-    pub fg_color: (u8,u8,u8),
-    pub bg_color: (u8,u8,u8),
+    pub fg_color: (u8, u8, u8),
+    pub bg_color: (u8, u8, u8),
 }
 
 #[derive(Debug, Deserialize)]

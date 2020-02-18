@@ -1,4 +1,4 @@
-use explore1::config::{AppConfig};
+use explore1::config::AppConfig;
 use log;
 use rltk::{Console, GameState, Rltk, RGB};
 use specs::prelude::*;
@@ -15,7 +15,7 @@ mod rect;
 pub use rect::Rect;
 
 pub struct State {
-    pub ecs: World
+    pub ecs: World,
 }
 
 impl State {
@@ -25,9 +25,9 @@ impl State {
 }
 
 impl GameState for State {
-    fn tick(&mut self, ctx : &mut Rltk) {
+    fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
-        
+
         self.run_systems();
         player_input(self, ctx);
 
@@ -46,21 +46,17 @@ impl GameState for State {
 fn main() {
     let cfg = AppConfig::new().unwrap();
     match twyg::setup_logger(&cfg.logging) {
-        Ok(_) => {},
-        Err(error) => {
-            panic!("Could not setup logger: {:?}", error)
-        },
+        Ok(_) => {}
+        Err(error) => panic!("Could not setup logger: {:?}", error),
     };
     log::info!("Successfully setup logger.");
     log::debug!("{:?}", cfg);
-    
+
     use rltk::RltkBuilder;
     let context = RltkBuilder::simple80x50()
         .with_title(cfg.game.title)
         .build();
-    let mut gs = State {
-        ecs: World::new()
-    };
+    let mut gs = State { ecs: World::new() };
     log::debug!("Registering components ...");
     gs.ecs.register::<Position>();
     gs.ecs.register::<Renderable>();
@@ -74,13 +70,16 @@ fn main() {
     log::debug!("Setting up Player ...");
     gs.ecs
         .create_entity()
-        .with(Position { x: player_x, y: player_y })
+        .with(Position {
+            x: player_x,
+            y: player_y,
+        })
         .with(Renderable {
             glyph: rltk::to_cp437(cfg.player.chr),
             fg: RGB::named(cfg.player.fg_color),
             bg: RGB::named(cfg.player.bg_color),
         })
-        .with(Player{})
+        .with(Player {})
         .build();
 
     log::info!("Successfully compelted setup");
