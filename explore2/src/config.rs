@@ -21,6 +21,11 @@ pub struct NPCs {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct ViewRange {
+    pub tile_count: i32,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct Player {
     pub chr: char,
     pub fg_color: (u8, u8, u8),
@@ -33,6 +38,7 @@ pub struct AppConfig {
     pub logging: LoggerOpts,
     pub npcs: NPCs,
     pub player: Player,
+    pub view_range: ViewRange,
 }
 
 impl AppConfig {
