@@ -7,5 +7,5 @@ pub fn new(cfg: &config::AppConfig) {
         Ok(_) => {}
         Err(error) => panic!("Could not setup logger: {:?}", error),
     };
-    log::info!("Successfully setup logger.");    
+    log::info!("Successfully setup logger.");
 }

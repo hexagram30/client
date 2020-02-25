@@ -2,7 +2,7 @@ use crate::components;
 use crate::game;
 use crate::map;
 use log;
-use rltk::{Rltk, VirtualKeyCode};
+use rltk::{Point, Rltk, VirtualKeyCode};
 use specs;
 use specs::prelude::*;
 use std::cmp::{max, min};
@@ -20,14 +20,17 @@ pub fn try_move(delta_x: i32, delta_y: i32, ecs: &mut specs::World) {
             pos.y = min(49, max(0, pos.y + delta_y));
 
             viewshed.dirty = true;
+            let mut ppos = ecs.write_resource::<Point>();
+            ppos.x = pos.x;
+            ppos.y = pos.y;
         }
     }
 }
 
-pub fn input(gs: &mut game::State, ctx: &mut Rltk) {
+pub fn input(gs: &mut game::State, ctx: &mut Rltk) -> game::RunState {
     // Player movement
     match ctx.key {
-        None => {} // No player input
+        None => return game::RunState::Paused, // Nothing happened
         Some(key) => match key {
             VirtualKeyCode::Left | VirtualKeyCode::A | VirtualKeyCode::Key4 => {
                 try_move(-1, 0, &mut gs.ecs)
@@ -45,7 +48,15 @@ pub fn input(gs: &mut game::State, ctx: &mut Rltk) {
             VirtualKeyCode::Key9 => try_move(1, -1, &mut gs.ecs),
             VirtualKeyCode::Key3 => try_move(1, 1, &mut gs.ecs),
             VirtualKeyCode::Key1 => try_move(-1, 1, &mut gs.ecs),
-            _ => log::debug!("Got user input: {:?}", key),
+            VirtualKeyCode::Space => {
+                log::debug!("Pausing game ...");
+                return game::RunState::Paused;
+            }
+            _ => {
+                log::debug!("Got user input: {:?}", key);
+                return game::RunState::Paused;
+            }
         },
     }
+    game::RunState::Running
 }

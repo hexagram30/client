@@ -1,8 +1,8 @@
 use crate::components;
 use crate::map;
-use specs::{Entities, System, WriteStorage};
-use specs::prelude::*;
 use rltk::{field_of_view, Point};
+use specs::prelude::*;
+use specs::{Entities, System, WriteStorage};
 
 pub struct VisibilitySystem {}
 

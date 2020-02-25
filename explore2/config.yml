@@ -16,9 +16,21 @@ npcs:
   init_y: 20
 
 player:
+  name: "Player"
   chr: "@"
   fg_color: [255,255,0]
   bg_color: [0,0,0]
+  view_range:
+    tile_count: 8
 
-view_range:
-  tile_count: 8
+monsters:
+  fg_color: [255,0,0]
+  bg_color: [0,0,0]
+  view_range:
+    tile_count: 8
+  monster1:
+    name: "Goblin"
+    chr: "g"
+  monster2:
+    name: "Orc"
+    chr: "o"
