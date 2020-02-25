@@ -1,9 +1,7 @@
-extern crate rltk;
-use super::Rect;
+use crate::rect;
 use rltk::{Algorithm2D, BaseMap, Console, Point, RandomNumberGenerator, Rltk, RGB};
 use std::cmp::{max, min};
-extern crate specs;
-use specs::prelude::*;
+use specs;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
@@ -14,7 +12,7 @@ pub enum TileType {
 #[derive(Default)]
 pub struct Map {
     pub tiles: Vec<TileType>,
-    pub rooms: Vec<Rect>,
+    pub rooms: Vec<rect::Rect>,
     pub width: i32,
     pub height: i32,
     pub revealed_tiles: Vec<bool>,
@@ -26,7 +24,7 @@ impl Map {
         (y as usize * self.width as usize) + x as usize
     }
 
-    fn apply_room_to_map(&mut self, room: &Rect) {
+    fn apply_room_to_map(&mut self, room: &rect::Rect) {
         for y in room.y1 + 1..=room.y2 {
             for x in room.x1 + 1..=room.x2 {
                 let idx = self.xy_idx(x, y);
@@ -76,7 +74,7 @@ impl Map {
             let h = rng.range(MIN_SIZE, MAX_SIZE);
             let x = rng.roll_dice(1, map.width - w - 1) - 1;
             let y = rng.roll_dice(1, map.height - h - 1) - 1;
-            let new_room = Rect::new(x, y, w, h);
+            let new_room = rect::Rect::new(x, y, w, h);
             let mut ok = true;
             for other_room in map.rooms.iter() {
                 if new_room.intersect(other_room) {
@@ -118,7 +116,7 @@ impl Algorithm2D for Map {
     }
 }
 
-pub fn draw_map(ecs: &World, ctx: &mut Rltk) {
+pub fn draw(ecs: &specs::World, ctx: &mut Rltk) {
     let map = ecs.fetch::<Map>();
 
     let mut y = 0;
