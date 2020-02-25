@@ -13,7 +13,7 @@ I would like to explore the foundations that would be necessary in order to crea
 ## Project
 
 * [Exploration 1][explore1]: [![][explore1-build-badge]][explore1-build]
-* [Exploration 2][explore2]
+* [Exploration 2][explore2]: [![][explore2-build-badge]][explore2-build]
 * [Final][final]
 
 <!-- Named page links below: /-->
@@ -23,3 +23,5 @@ I would like to explore the foundations that would be necessary in order to crea
 [final]: final/
 [explore1-build]: https://github.com/oubiwann/tech-reflects/actions?query=workflow%3Aexplore1-build+
 [explore1-build-badge]: https://github.com/oubiwann/tech-reflects/workflows/explore1-build/badge.svg
+[explore2-build]: https://github.com/oubiwann/tech-reflects/actions?query=workflow%3Aexplore2-build+
+[explore2-build-badge]: https://github.com/oubiwann/tech-reflects/workflows/explore2-build/badge.svg

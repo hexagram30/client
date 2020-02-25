@@ -1,4 +1,4 @@
-name: explore1-build
+name: explore2-build
 
 on: [push]
 
@@ -7,10 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build Exploration 1
-      run: cd explore1 && cargo build
-    - name: Run Exploration 1 Tests
-      run: cd explore1 && cargo test
     - name: Build Exploration 2
       run: cd explore2 && cargo build
     - name: Run Exploration 2 Tests
