@@ -9,5 +9,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build Exploration 1
       run: cd explore1 && cargo build
-    - name: Run tests
+    - name: Run Exploration 1 Tests
       run: cd explore1 && cargo test
+    - name: Build Exploration 2
+      run: cd explore2 && cargo build
+    - name: Run Exploration 2 Tests
+      run: cd explore2 && cargo test
