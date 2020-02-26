@@ -27,7 +27,7 @@ monsters:
   fg_color: [255,0,0]
   bg_color: [0,0,0]
   view_range:
-    tile_count: 8
+    tile_count: 2
   monster1:
     name: "Goblin"
     chr: "g"
