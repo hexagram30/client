@@ -5,11 +5,13 @@ use crate::physics;
 use crate::player;
 use rltk::{self, Console, GameState};
 use specs::{self, Join, RunNow, WorldExt};
+use std::process;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
     Paused,
     Running,
+    Quitting,
 }
 
 pub struct State {
@@ -30,8 +32,9 @@ impl State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut rltk::Rltk) {
         ctx.cls();
-
-        if self.runstate == RunState::Running {
+        if self.runstate == RunState::Quitting {
+            process::exit(0);
+        } else if self.runstate == RunState::Running {
             self.run_systems();
             self.runstate = RunState::Paused;
         } else {

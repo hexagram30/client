@@ -34,3 +34,12 @@ monsters:
   monster2:
     name: "Orc"
     chr: "o"
+
+map:
+  fullscreen: true
+  width: 160
+  height: 80
+  rooms:
+    max_count: 30
+    min_size: 6
+    max_size: 10

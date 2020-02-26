@@ -9,12 +9,13 @@ use specs;
 use specs::prelude::*;
 
 fn main() {
-    let cfg = config::AppConfig::new().unwrap();
+    let cfg = config::AppConfig::new();
     logger::new(&cfg);
     log::debug!("{:?}", cfg);
 
-    let context = rltk::RltkBuilder::simple80x50()
-        .with_title(cfg.game.title)
+    let context = rltk::RltkBuilder::simple(cfg.map.width, cfg.map.height)
+        .with_title(cfg.game.title.clone())
+        .with_fullscreen(cfg.map.fullscreen)
         .build();
     let mut gs = game::State {
         ecs: specs::World::new(),
@@ -29,7 +30,7 @@ fn main() {
     gs.ecs.register::<components::Name>();
 
     log::debug!("Setting up Map ...");
-    let game_map = map::Map::new_map_rooms_and_corridors();
+    let game_map = map::Map::new_map_rooms_and_corridors(&cfg);
     log::debug!("Created {} rooms.", game_map.rooms.len());
     let (player_x, player_y) = game_map.rooms[0].center();
 

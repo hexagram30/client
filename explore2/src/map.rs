@@ -1,3 +1,4 @@
+use crate::config;
 use crate::rect;
 use rltk::{Algorithm2D, BaseMap, Console, Point, RandomNumberGenerator, Rltk, RGB};
 use specs;
@@ -53,25 +54,23 @@ impl Map {
 
     /// Makes a new map using the algorithm from http://rogueliketutorials.com/tutorials/tcod/part-3/
     /// This gives a handful of random rooms and corridors joining them together.
-    pub fn new_map_rooms_and_corridors() -> Map {
+    pub fn new_map_rooms_and_corridors(cfg: &config::AppConfig) -> Map {
+        let width = cfg.map.width as usize;
+        let height = cfg.map.height as usize;
         let mut map = Map {
-            tiles: vec![TileType::Wall; 80 * 50],
+            tiles: vec![TileType::Wall; width * height],
             rooms: Vec::new(),
-            width: 80,
-            height: 50,
-            revealed_tiles: vec![false; 80 * 50],
-            visible_tiles: vec![false; 80 * 50],
+            width: cfg.map.width,
+            height: cfg.map.height,
+            revealed_tiles: vec![false; width * height],
+            visible_tiles: vec![false; width * height],
         };
-
-        const MAX_ROOMS: i32 = 30;
-        const MIN_SIZE: i32 = 6;
-        const MAX_SIZE: i32 = 10;
 
         let mut rng = RandomNumberGenerator::new();
 
-        for _i in 0..MAX_ROOMS {
-            let w = rng.range(MIN_SIZE, MAX_SIZE);
-            let h = rng.range(MIN_SIZE, MAX_SIZE);
+        for _i in 0..cfg.map.rooms.max_count {
+            let w = rng.range(cfg.map.rooms.min_size, cfg.map.rooms.max_size);
+            let h = rng.range(cfg.map.rooms.min_size, cfg.map.rooms.max_size);
             let x = rng.roll_dice(1, map.width - w - 1) - 1;
             let y = rng.roll_dice(1, map.height - h - 1) - 1;
             let new_room = rect::Rect::new(x, y, w, h);
@@ -117,14 +116,14 @@ impl Algorithm2D for Map {
 }
 
 pub fn draw(ecs: &specs::World, ctx: &mut Rltk) {
-    let map = ecs.fetch::<Map>();
+    let game_map = ecs.fetch::<Map>();
 
     let mut y = 0;
     let mut x = 0;
-    for (idx, tile) in map.tiles.iter().enumerate() {
+    for (idx, tile) in game_map.tiles.iter().enumerate() {
         // Render a tile depending upon the tile type
 
-        if map.revealed_tiles[idx] {
+        if game_map.revealed_tiles[idx] {
             let glyph;
             let mut fg;
             match tile {
@@ -137,7 +136,7 @@ pub fn draw(ecs: &specs::World, ctx: &mut Rltk) {
                     fg = RGB::from_f32(0., 1.0, 0.);
                 }
             }
-            if !map.visible_tiles[idx] {
+            if !game_map.visible_tiles[idx] {
                 fg = fg.to_greyscale()
             }
             ctx.set(x, y, fg, RGB::from_f32(0., 0., 0.), glyph);
@@ -145,7 +144,7 @@ pub fn draw(ecs: &specs::World, ctx: &mut Rltk) {
 
         // Move the coordinates
         x += 1;
-        if x > 79 {
+        if x > (game_map.width - 1) {
             x = 0;
             y += 1;
         }
