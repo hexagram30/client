@@ -52,18 +52,27 @@ impl Map {
         }
     }
 
+    fn is_exit_valid(&self, x: i32, y: i32) -> bool {
+        if x < 1 || x > self.width - 1 || y < 1 || y > self.height - 1 {
+            return false;
+        }
+        let idx = self.xy_idx(x, y);
+        self.tiles[idx as usize] != TileType::Wall
+    }
+
     /// Makes a new map using the algorithm from http://rogueliketutorials.com/tutorials/tcod/part-3/
     /// This gives a handful of random rooms and corridors joining them together.
     pub fn new_map_rooms_and_corridors(cfg: &config::AppConfig) -> Map {
-        let width = cfg.map.width as usize;
-        let height = cfg.map.height as usize;
+        let width = cfg.map.width;
+        let height = cfg.map.height;
+        let tile_count = width * height;
         let mut map = Map {
-            tiles: vec![TileType::Wall; width * height],
+            tiles: vec![TileType::Wall; tile_count as usize],
             rooms: Vec::new(),
             width: cfg.map.width,
             height: cfg.map.height,
-            revealed_tiles: vec![false; width * height],
-            visible_tiles: vec![false; width * height],
+            revealed_tiles: vec![false; tile_count as usize],
+            visible_tiles: vec![false; tile_count as usize],
         };
 
         let mut rng = RandomNumberGenerator::new();
@@ -106,6 +115,43 @@ impl Map {
 impl BaseMap for Map {
     fn is_opaque(&self, idx: usize) -> bool {
         self.tiles[idx] == TileType::Wall
+    }
+
+    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
+        let mut exits: Vec<(usize, f32)> = Vec::new();
+        let x = idx as i32 % self.width;
+        let y = idx as i32 / self.width;
+        let w = self.width as usize;
+
+        // Cardinal directions
+        if self.is_exit_valid(x - 1, y) {
+            exits.push((idx - 1, 1.0))
+        };
+        if self.is_exit_valid(x + 1, y) {
+            exits.push((idx + 1, 1.0))
+        };
+        if self.is_exit_valid(x, y - 1) {
+            exits.push((idx - w, 1.0))
+        };
+        if self.is_exit_valid(x, y + 1) {
+            exits.push((idx + w, 1.0))
+        };
+
+        // Diagonals
+        if self.is_exit_valid(x - 1, y - 1) {
+            exits.push(((idx - w) - 1, 1.45));
+        }
+        if self.is_exit_valid(x + 1, y - 1) {
+            exits.push(((idx - w) + 1, 1.45));
+        }
+        if self.is_exit_valid(x - 1, y + 1) {
+            exits.push(((idx + w) - 1, 1.45));
+        }
+        if self.is_exit_valid(x + 1, y + 1) {
+            exits.push(((idx + w) + 1, 1.45));
+        }
+
+        exits
     }
 }
 
