@@ -3,7 +3,6 @@ game:
 
 logging:
   colored: true
-  file: ""
   level: debug
   report_caller: true
 
@@ -18,6 +17,11 @@ npcs:
 player:
   name: "Player"
   chr: "@"
+  stats:
+    max_hp: 30
+    starting_hp: 30
+    defense: 2
+    power: 5
   fg_color: [255,255,0]
   bg_color: [0,0,0]
   view_range:
@@ -27,13 +31,23 @@ monsters:
   fg_color: [255,0,0]
   bg_color: [0,0,0]
   view_range:
-    tile_count: 2
+    tile_count: 3
   monster1:
     name: "Goblin"
     chr: "g"
+    stats:
+      max_hp: 10
+      starting_hp: 10
+      defense: 1
+      power: 2
   monster2:
     name: "Orc"
     chr: "o"
+    stats:
+      max_hp: 20
+      starting_hp: 20
+      defense: 2
+      power: 3
 
 map:
   fullscreen: true

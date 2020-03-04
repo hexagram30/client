@@ -1,7 +1,9 @@
+use crate::components;
 use crate::config;
 use crate::rect;
 use rltk::{Algorithm2D, BaseMap, Console, Point, RandomNumberGenerator, Rltk, RGB};
 use specs;
+use specs::prelude::*;
 use std::cmp::{max, min};
 
 #[derive(PartialEq, Copy, Clone)]
@@ -18,6 +20,8 @@ pub struct Map {
     pub height: i32,
     pub revealed_tiles: Vec<bool>,
     pub visible_tiles: Vec<bool>,
+    pub blocked: Vec<bool>,
+    pub tile_content: Vec<Vec<Entity>>,
 }
 
 impl Map {
@@ -57,7 +61,19 @@ impl Map {
             return false;
         }
         let idx = self.xy_idx(x, y);
-        self.tiles[idx as usize] != TileType::Wall
+        !self.blocked[idx]
+    }
+
+    pub fn populate_blocked(&mut self) {
+        for (i, tile) in self.tiles.iter_mut().enumerate() {
+            self.blocked[i] = *tile == TileType::Wall;
+        }
+    }
+
+    pub fn clear_content_index(&mut self) {
+        for content in self.tile_content.iter_mut() {
+            content.clear();
+        }
     }
 
     /// Makes a new map using the algorithm from http://rogueliketutorials.com/tutorials/tcod/part-3/
@@ -73,6 +89,8 @@ impl Map {
             height: cfg.map.height,
             revealed_tiles: vec![false; tile_count as usize],
             visible_tiles: vec![false; tile_count as usize],
+            blocked: vec![false; tile_count as usize],
+            tile_content: vec![Vec::new(); tile_count as usize],
         };
 
         let mut rng = RandomNumberGenerator::new();
@@ -193,6 +211,37 @@ pub fn draw(ecs: &specs::World, ctx: &mut Rltk) {
         if x > (game_map.width - 1) {
             x = 0;
             y += 1;
+        }
+    }
+}
+
+pub struct IndexingSystem {}
+
+impl<'a> System<'a> for IndexingSystem {
+    type SystemData = (
+        WriteExpect<'a, Map>,
+        ReadStorage<'a, components::Position>,
+        ReadStorage<'a, components::BlocksTile>,
+        Entities<'a>,
+    );
+
+    fn run(&mut self, data: Self::SystemData) {
+        let (mut game_map, position, blockers, entities) = data;
+
+        game_map.populate_blocked();
+        game_map.clear_content_index();
+        for (entity, position) in (&entities, &position).join() {
+            let idx = game_map.xy_idx(position.x, position.y);
+
+            // If they block, update the blocking list
+            let _p: Option<&components::BlocksTile> = blockers.get(entity);
+            if let Some(_p) = _p {
+                game_map.blocked[idx] = true;
+            }
+
+            // Push the entity to the appropriate index slot. It's a Copy
+            // type, so we don't need to clone it (we want to avoid moving it out of the ECS!)
+            game_map.tile_content[idx].push(entity);
         }
     }
 }

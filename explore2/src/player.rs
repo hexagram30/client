@@ -9,13 +9,41 @@ use std::cmp::{max, min};
 
 pub fn try_move(delta_x: i32, delta_y: i32, ecs: &mut specs::World) {
     let mut positions = ecs.write_storage::<components::Position>();
-    let mut players = ecs.write_storage::<components::Player>();
+    let players = ecs.read_storage::<components::Player>();
     let mut viewsheds = ecs.write_storage::<components::Viewshed>();
+    let entities = ecs.entities();
+    let combat_stats = ecs.read_storage::<components::CombatStats>();
     let game_map = ecs.fetch::<map::Map>();
+    let mut wants_to_melee = ecs.write_storage::<components::WantsToMelee>();
 
-    for (_player, pos, viewshed) in (&mut players, &mut positions, &mut viewsheds).join() {
+    for (entity, _player, pos, viewshed) in
+        (&entities, &players, &mut positions, &mut viewsheds).join()
+    {
+        if pos.x + delta_x < 1
+            || pos.x + delta_x > game_map.width - 1
+            || pos.y + delta_y < 1
+            || pos.y + delta_y > game_map.height - 1
+        {
+            return;
+        }
         let destination_idx = game_map.xy_idx(pos.x + delta_x, pos.y + delta_y);
-        if game_map.tiles[destination_idx] != map::TileType::Wall {
+
+        for potential_target in game_map.tile_content[destination_idx].iter() {
+            let target = combat_stats.get(*potential_target);
+            if let Some(_target) = target {
+                wants_to_melee
+                    .insert(
+                        entity,
+                        components::WantsToMelee {
+                            target: *potential_target,
+                        },
+                    )
+                    .expect("Add target failed");
+                return;
+            }
+        }
+
+        if !game_map.blocked[destination_idx] {
             pos.x = min(game_map.width - 1, max(0, pos.x + delta_x));
             pos.y = min(game_map.height - 1, max(0, pos.y + delta_y));
 
@@ -30,7 +58,7 @@ pub fn try_move(delta_x: i32, delta_y: i32, ecs: &mut specs::World) {
 pub fn input(gs: &mut game::State, ctx: &mut Rltk) -> game::RunState {
     // Player movement
     match ctx.key {
-        None => return game::RunState::Paused, // Nothing happened
+        None => return game::RunState::AwaitingInput, // Nothing happened
         Some(key) => match key {
             VirtualKeyCode::Left | VirtualKeyCode::A | VirtualKeyCode::Key4 => {
                 try_move(-1, 0, &mut gs.ecs)
@@ -58,9 +86,9 @@ pub fn input(gs: &mut game::State, ctx: &mut Rltk) -> game::RunState {
             }
             _ => {
                 log::debug!("Got user input: {:?}", key);
-                return game::RunState::Paused;
+                return game::RunState::AwaitingInput;
             }
         },
     }
-    game::RunState::Running
+    game::RunState::PlayerTurn
 }

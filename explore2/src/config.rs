@@ -1,16 +1,18 @@
 use cfglib;
 use serde::Deserialize;
+use specs::prelude::*;
+use specs_derive::*;
 use twyg::LoggerOpts;
 
 const ENV_PREFIX: &str = "EXP";
 const CONFIG_FILE: &str = "config";
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Game {
     pub title: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct NPCs {
     pub count: i32,
     pub chr: char,
@@ -20,27 +22,37 @@ pub struct NPCs {
     pub init_y: i32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct ViewRange {
     pub tile_count: i32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize)]
+pub struct Stats {
+    pub max_hp: i32,
+    pub starting_hp: i32,
+    pub defense: i32,
+    pub power: i32,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 pub struct Player {
     pub name: String,
     pub chr: char,
     pub fg_color: (u8, u8, u8),
     pub bg_color: (u8, u8, u8),
     pub view_range: ViewRange,
+    pub stats: Stats,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Monster {
     pub name: String,
     pub chr: char,
+    pub stats: Stats,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Monsters {
     pub monster1: Monster,
     pub monster2: Monster,
@@ -64,7 +76,7 @@ pub struct Map {
     pub rooms: Rooms,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Component, Debug, Deserialize)]
 pub struct AppConfig {
     pub game: Game,
     pub logging: LoggerOpts,

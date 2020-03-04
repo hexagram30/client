@@ -19,15 +19,19 @@ fn main() {
         .build();
     let mut gs = game::State {
         ecs: specs::World::new(),
-        runstate: game::RunState::Running,
     };
     log::debug!("Registering components ...");
+    gs.ecs.register::<config::AppConfig>();
     gs.ecs.register::<components::Position>();
     gs.ecs.register::<components::Renderable>();
     gs.ecs.register::<components::Player>();
     gs.ecs.register::<components::Viewshed>();
     gs.ecs.register::<components::Monster>();
     gs.ecs.register::<components::Name>();
+    gs.ecs.register::<components::BlocksTile>();
+    gs.ecs.register::<components::CombatStats>();
+    gs.ecs.register::<components::WantsToMelee>();
+    gs.ecs.register::<components::SufferDamage>();
 
     log::debug!("Setting up Map ...");
     let game_map = map::Map::new_map_rooms_and_corridors(&cfg);
@@ -35,7 +39,8 @@ fn main() {
     let (player_x, player_y) = game_map.rooms[0].center();
 
     log::debug!("Setting up Player ...");
-    gs.ecs
+    let player_entity = gs
+        .ecs
         .create_entity()
         .with(components::Position {
             x: player_x,
@@ -53,7 +58,13 @@ fn main() {
             dirty: true,
         })
         .with(components::Name {
-            name: cfg.player.name,
+            name: cfg.player.name.clone(),
+        })
+        .with(components::CombatStats {
+            max_hp: cfg.player.stats.max_hp,
+            hp: cfg.player.stats.starting_hp,
+            defense: cfg.player.stats.defense,
+            power: cfg.player.stats.power,
         })
         .build();
 
@@ -64,15 +75,18 @@ fn main() {
         let (x, y) = room.center();
         let glyph: u8;
         let name: String;
+        let stats: config::Stats;
         let roll = rng.roll_dice(1, 2);
         match roll {
             1 => {
                 glyph = rltk::to_cp437(cfg.monsters.monster1.chr);
                 name = cfg.monsters.monster1.name.clone();
+                stats = cfg.monsters.monster1.stats.clone();
             }
             _ => {
                 glyph = rltk::to_cp437(cfg.monsters.monster2.chr);
                 name = cfg.monsters.monster2.name.clone();
+                stats = cfg.monsters.monster2.stats.clone();
             }
         }
 
@@ -86,12 +100,19 @@ fn main() {
             })
             .with(components::Viewshed {
                 visible_tiles: Vec::new(),
-                range: cfg.monsters.view_range.tile_count,
+                range: cfg.monsters.view_range.tile_count.clone(),
                 dirty: true,
             })
             .with(components::Monster {})
             .with(components::Name {
                 name: format!("{} #{}", &name, i),
+            })
+            .with(components::BlocksTile {})
+            .with(components::CombatStats {
+                max_hp: stats.max_hp,
+                hp: stats.starting_hp,
+                defense: stats.defense,
+                power: stats.power,
             })
             .build();
     }
@@ -99,8 +120,11 @@ fn main() {
     log::info!("Successfully compelted setup");
 
     log::debug!("Inserting map and player into component system ...");
+    gs.ecs.insert(cfg);
     gs.ecs.insert(game_map);
     gs.ecs.insert(Point::new(player_x, player_y));
+    gs.ecs.insert(player_entity);
+    gs.ecs.insert(game::RunState::PreRun);
 
     log::info!("Starting game ...");
     rltk::main_loop(context, gs);

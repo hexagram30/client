@@ -1,4 +1,5 @@
 use crate::ai::monster;
+use crate::combat;
 use crate::components;
 use crate::map;
 use crate::physics;
@@ -9,14 +10,16 @@ use std::process;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
+    AwaitingInput,
+    PreRun,
+    PlayerTurn,
+    MonsterTurn,
     Paused,
-    Running,
     Quitting,
 }
 
 pub struct State {
     pub ecs: specs::World,
-    pub runstate: RunState,
 }
 
 impl State {
@@ -25,6 +28,12 @@ impl State {
         vis.run_now(&self.ecs);
         let mut mob = monster::MonsterAI {};
         mob.run_now(&self.ecs);
+        let mut mapindex = map::IndexingSystem {};
+        mapindex.run_now(&self.ecs);
+        let mut melee = combat::melee::MeleeSystem {};
+        melee.run_now(&self.ecs);
+        let mut damage = combat::damage::DamageSystem {};
+        damage.run_now(&self.ecs);
         self.ecs.maintain();
     }
 }
@@ -32,14 +41,42 @@ impl State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut rltk::Rltk) {
         ctx.cls();
-        if self.runstate == RunState::Quitting {
-            process::exit(0);
-        } else if self.runstate == RunState::Running {
-            self.run_systems();
-            self.runstate = RunState::Paused;
-        } else {
-            self.runstate = player::input(self, ctx);
+        let mut newrunstate;
+        {
+            let runstate = self.ecs.fetch::<RunState>();
+            newrunstate = *runstate;
         }
+
+        match newrunstate {
+            RunState::PreRun => {
+                self.run_systems();
+                newrunstate = RunState::AwaitingInput;
+            }
+            RunState::AwaitingInput => {
+                newrunstate = player::input(self, ctx);
+            }
+            RunState::PlayerTurn => {
+                self.run_systems();
+                newrunstate = RunState::MonsterTurn;
+            }
+            RunState::MonsterTurn => {
+                self.run_systems();
+                newrunstate = RunState::AwaitingInput;
+            }
+            RunState::Paused => {
+                self.run_systems();
+                newrunstate = RunState::AwaitingInput;
+            }
+            RunState::Quitting => {
+                process::exit(0);
+            }
+        }
+
+        {
+            let mut runwriter = self.ecs.write_resource::<RunState>();
+            *runwriter = newrunstate;
+        }
+        combat::damage::delete_the_dead(&mut self.ecs);
 
         map::draw(&self.ecs, ctx);
 
