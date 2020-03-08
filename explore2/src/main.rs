@@ -1,6 +1,7 @@
 use explore2::components;
 use explore2::config;
 use explore2::game;
+use explore2::gui;
 use explore2::logger;
 use explore2::map;
 use log;
@@ -10,14 +11,20 @@ use specs::prelude::*;
 
 fn main() {
     let cfg = config::AppConfig::new();
+    let title = cfg.game.title.clone();
     logger::new(&cfg);
     log::debug!("{:?}", cfg);
+    log::debug!("Setting up game log ...");
+    let game_log = game::log::GameLog{entries: vec![
+        format!("{} {}", cfg.game.welcome.clone(), title)]};
+    log::debug!("Setting up GUI ...");
+    let game_gui = gui::new(&cfg);
 
-    let context = rltk::RltkBuilder::simple(cfg.map.width, cfg.map.height)
-        .with_title(cfg.game.title.clone())
+    let context = rltk::RltkBuilder::simple(game_gui.width, game_gui.height)
+        .with_title(title)
         .with_fullscreen(cfg.map.fullscreen)
         .build();
-    let mut gs = game::State {
+    let mut gs = game::state::State {
         ecs: specs::World::new(),
     };
     log::debug!("Registering components ...");
@@ -119,12 +126,18 @@ fn main() {
 
     log::info!("Successfully compelted setup");
 
-    log::debug!("Inserting map and player into component system ...");
+    log::debug!("Inserting configuration into component system ...");
     gs.ecs.insert(cfg);
+    log::debug!("Inserting game log into component system ...");
+    gs.ecs.insert(game_log);
+    log::debug!("Inserting GUI into component system ...");
+    gs.ecs.insert(game_gui);
+    log::debug!("Inserting map into component system ...");
     gs.ecs.insert(game_map);
+    log::debug!("Inserting player into component system ...");
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(player_entity);
-    gs.ecs.insert(game::RunState::PreRun);
+    gs.ecs.insert(game::state::RunState::PreRun);
 
     log::info!("Starting game ...");
     rltk::main_loop(context, gs);

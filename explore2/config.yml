@@ -1,5 +1,6 @@
 game:
-  title: Roguelike Tutorial
+  title: Planet Explorer
+  welcome: Welcome to
 
 logging:
   colored: true
@@ -18,10 +19,10 @@ player:
   name: "Player"
   chr: "@"
   stats:
-    max_hp: 30
-    starting_hp: 30
+    max_hp: 80
+    starting_hp: 80
     defense: 2
-    power: 5
+    power: 8
   fg_color: [255,255,0]
   bg_color: [0,0,0]
   view_range:
@@ -50,10 +51,13 @@ monsters:
       power: 3
 
 map:
-  fullscreen: true
+  fullscreen: false
   width: 160
-  height: 80
+  height: 74
   rooms:
     max_count: 30
     min_size: 6
     max_size: 10
+
+text_area:
+  height: 6

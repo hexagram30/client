@@ -10,6 +10,7 @@ const CONFIG_FILE: &str = "config";
 #[derive(Clone, Debug, Deserialize)]
 pub struct Game {
     pub title: String,
+    pub welcome: String,    
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -76,6 +77,11 @@ pub struct Map {
     pub rooms: Rooms,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize)]
+pub struct TextArea {
+    pub height: i32,
+}
+
 #[derive(Clone, Component, Debug, Deserialize)]
 pub struct AppConfig {
     pub game: Game,
@@ -84,6 +90,7 @@ pub struct AppConfig {
     pub player: Player,
     pub monsters: Monsters,
     pub map: Map,
+    pub text_area: TextArea,
 }
 
 impl AppConfig {

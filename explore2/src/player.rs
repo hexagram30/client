@@ -55,10 +55,10 @@ pub fn try_move(delta_x: i32, delta_y: i32, ecs: &mut specs::World) {
     }
 }
 
-pub fn input(gs: &mut game::State, ctx: &mut Rltk) -> game::RunState {
+pub fn input(gs: &mut game::state::State, ctx: &mut Rltk) -> game::state::RunState {
     // Player movement
     match ctx.key {
-        None => return game::RunState::AwaitingInput, // Nothing happened
+        None => return game::state::RunState::AwaitingInput, // Nothing happened
         Some(key) => match key {
             VirtualKeyCode::Left | VirtualKeyCode::A | VirtualKeyCode::Key4 => {
                 try_move(-1, 0, &mut gs.ecs)
@@ -78,17 +78,17 @@ pub fn input(gs: &mut game::State, ctx: &mut Rltk) -> game::RunState {
             VirtualKeyCode::Key1 | VirtualKeyCode::Z => try_move(-1, 1, &mut gs.ecs),
             VirtualKeyCode::Space => {
                 log::debug!("Pausing game ...");
-                return game::RunState::Paused;
+                return game::state::RunState::Paused;
             }
             VirtualKeyCode::Escape => {
                 log::info!("Quitting ...");
-                return game::RunState::Quitting;
+                return game::state::RunState::Quitting;
             }
             _ => {
                 log::debug!("Got user input: {:?}", key);
-                return game::RunState::AwaitingInput;
+                return game::state::RunState::AwaitingInput;
             }
         },
     }
-    game::RunState::PlayerTurn
+    game::state::RunState::PlayerTurn
 }

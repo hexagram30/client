@@ -1,5 +1,5 @@
 use crate::components;
-use rltk::console;
+use crate::game;
 use specs::prelude::*;
 use specs::{self, Join, System};
 
@@ -8,6 +8,7 @@ pub struct MeleeSystem {}
 impl<'a> System<'a> for MeleeSystem {
     type SystemData = (
         Entities<'a>,
+        WriteExpect<'a, game::log::GameLog>,
         WriteStorage<'a, components::WantsToMelee>,
         ReadStorage<'a, components::Name>,
         ReadStorage<'a, components::CombatStats>,
@@ -15,7 +16,7 @@ impl<'a> System<'a> for MeleeSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, mut wants_melee, names, combat_stats, mut inflict_damage) = data;
+        let (entities, mut log, mut wants_melee, names, combat_stats, mut inflict_damage) = data;
 
         for (_entity, wants_melee, name, stats) in
             (&entities, &wants_melee, &names, &combat_stats).join()
@@ -27,21 +28,16 @@ impl<'a> System<'a> for MeleeSystem {
                     let damage = i32::max(0, stats.power - target_stats.defense);
 
                     if damage == 0 {
-                        console::log(&format!(
+                        log.entries.push(format!(
                             "{} is unable to hurt {}",
                             &name.name, &target_name.name
                         ));
                     } else {
-                        console::log(&format!(
+                        log.entries.push(format!(
                             "{} hits {}, for {} hp.",
                             &name.name, &target_name.name, damage
                         ));
-                        inflict_damage
-                            .insert(
-                                wants_melee.target,
-                                components::SufferDamage { amount: damage },
-                            )
-                            .expect("Unable to do damage");
+                        components::SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
                     }
                 }
             }

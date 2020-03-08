@@ -15,7 +15,7 @@ impl<'a> System<'a> for MonsterAI {
         WriteExpect<'a, map::Map>,
         ReadExpect<'a, Point>,
         ReadExpect<'a, Entity>,
-        ReadExpect<'a, game::RunState>,
+        ReadExpect<'a, game::state::RunState>,
         Entities<'a>,
         WriteStorage<'a, components::Viewshed>,
         ReadStorage<'a, components::Monster>,
@@ -36,7 +36,7 @@ impl<'a> System<'a> for MonsterAI {
             mut wants_to_melee,
         ) = data;
 
-        if *runstate != game::RunState::MonsterTurn {
+        if *runstate != game::state::RunState::MonsterTurn {
             return;
         }
 
