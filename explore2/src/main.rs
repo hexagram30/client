@@ -15,8 +15,9 @@ fn main() {
     logger::new(&cfg);
     log::debug!("{:?}", cfg);
     log::debug!("Setting up game log ...");
-    let game_log = game::log::GameLog{entries: vec![
-        format!("{} {}", cfg.game.welcome.clone(), title)]};
+    let game_log = game::log::GameLog {
+        entries: vec![format!("{} {}", cfg.game.welcome.clone(), title)],
+    };
     log::debug!("Setting up GUI ...");
     let game_gui = gui::new(&cfg);
 

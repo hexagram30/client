@@ -10,7 +10,7 @@ const CONFIG_FILE: &str = "config";
 #[derive(Clone, Debug, Deserialize)]
 pub struct Game {
     pub title: String,
-    pub welcome: String,    
+    pub welcome: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
