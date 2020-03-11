@@ -4,8 +4,8 @@ use explore2::game;
 use explore2::gui;
 use explore2::logger;
 use explore2::map;
-use explore2::monster;
-use explore2::player;
+use explore2::player::character as player;
+use explore2::rooms;
 use log;
 use rltk::Point;
 use specs;
@@ -21,11 +21,11 @@ fn main() {
         entries: vec![format!("{} {}", cfg.game.welcome.clone(), title)],
     };
     log::debug!("Setting up GUI ...");
-    let game_gui = gui::new(&cfg);
+    let game_gui = gui::new(&cfg.gui);
 
     let context = rltk::RltkBuilder::simple(game_gui.width, game_gui.height)
         .with_title(title)
-        .with_fullscreen(cfg.map.fullscreen)
+        .with_fullscreen(cfg.gui.fullscreen)
         .build();
     let mut gs = game::state::State {
         ecs: specs::World::new(),
@@ -42,29 +42,30 @@ fn main() {
     gs.ecs.register::<components::CombatStats>();
     gs.ecs.register::<components::WantsToMelee>();
     gs.ecs.register::<components::SufferDamage>();
+    gs.ecs.register::<components::Item>();
+    gs.ecs.register::<components::Potion>();
+    gs.ecs.register::<components::InBackpack>();
+    gs.ecs.register::<components::WantsToPickupItem>();
+    gs.ecs.register::<components::WantsToDrinkPotion>();
+    gs.ecs.register::<components::WantsToDropItem>();
 
     log::debug!("Setting up Map ...");
     let game_map = map::Map::new_map_rooms_and_corridors(&cfg);
     log::debug!("Created {} rooms.", game_map.rooms.len());
     log::debug!("Setting up Player ...");
-    let (x, y) = game_map.rooms[0].center();
-    let player_pos = components::Position { x: x, y: y };
+    let (player_x, player_y) = game_map.rooms[0].center();
+    let player_pos = components::Position {
+        x: player_x,
+        y: player_y,
+    };
     let player_entity = player::spawn(&mut gs.ecs, player_pos, cfg.player.clone());
-    log::debug!("Inserting player into component system ...");
-    gs.ecs.insert(Point::new(x, y));
 
     log::debug!("Inserting RNG ...");
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
-
-    log::debug!("Setting up Monsters ...");
-    let mut rng = rltk::RandomNumberGenerator::new();
     for (i, room) in game_map.rooms.iter().skip(1).enumerate() {
-        log::trace!("Setting up Monster {} ...", i);
-        let (x, y) = room.center();
-        let monster_pos = components::Position { x: x, y: y };
-        monster::random(&mut gs.ecs, monster_pos, cfg.monsters.clone());
+        log::trace!("Setting room {} ...", i);
+        rooms::spawn(&mut gs.ecs, room, &cfg);
     }
-
     log::info!("Successfully compelted setup");
 
     log::debug!("Inserting configuration into component system ...");
@@ -75,6 +76,8 @@ fn main() {
     gs.ecs.insert(game_gui);
     log::debug!("Inserting map into component system ...");
     gs.ecs.insert(game_map);
+    log::debug!("Inserting player into component system ...");
+    gs.ecs.insert(Point::new(player_x, player_y));
 
     gs.ecs.insert(player_entity);
     gs.ecs.insert(game::state::RunState::PreRun);

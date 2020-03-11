@@ -2,6 +2,16 @@ game:
   title: Planet Explorer
   welcome: Welcome to
 
+gui:
+  fullscreen: false
+  fg_color: [255,255,255]
+  bg_color: [0,0,0]
+  map_area:
+    width: 160
+    height: 74
+  text_area:
+    height: 6
+
 logging:
   colored: true
   level: debug
@@ -50,18 +60,17 @@ monsters:
       defense: 2
       power: 3
 
-map:
-  fullscreen: false
-  width: 160
-  height: 74
-  rooms:
-    max_count: 30
-    min_size: 6
-    max_size: 10
-
-text_area:
-  height: 6
-
 rooms:
+  max_count: 30
+  min_size: 6
+  max_size: 10
   max_monsters: 4
   max_items: 2
+
+items:
+  fg_color: [255,0,255]
+  bg_color: [0,0,0]
+  health_potion:
+    name: "Health Potion"
+    chr: "i"
+    hp: 8

@@ -67,30 +67,52 @@ pub struct Rooms {
     pub max_count: i32,
     pub min_size: i32,
     pub max_size: i32,
+    pub max_monsters: i32,
+    pub max_items: i32,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize)]
-pub struct Map {
-    pub fullscreen: bool,
+#[derive(Clone, Copy, Debug, Default, Deserialize)]
+pub struct MapArea {
     pub width: i32,
     pub height: i32,
-    pub rooms: Rooms,
 }
-
-#[derive(Clone, Copy, Debug, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Deserialize)]
 pub struct TextArea {
     pub height: i32,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize)]
+pub struct Gui {
+    pub bg_color: (u8, u8, u8),
+    pub fg_color: (u8, u8, u8),
+    pub fullscreen: bool,
+    pub map_area: MapArea,
+    pub text_area: TextArea,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct HealthPotion {
+    pub name: String,
+    pub chr: char,
+    pub hp: i32,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct Items {
+    pub fg_color: (u8, u8, u8),
+    pub bg_color: (u8, u8, u8),
+    pub health_potion: HealthPotion,
+}
 #[derive(Clone, Component, Debug, Deserialize)]
 pub struct AppConfig {
     pub game: Game,
+    pub gui: Gui,
+    pub items: Items,
     pub logging: LoggerOpts,
+    pub monsters: Monsters,
     pub npcs: NPCs,
     pub player: Player,
-    pub monsters: Monsters,
-    pub map: Map,
-    pub text_area: TextArea,
+    pub rooms: Rooms,
 }
 
 impl AppConfig {

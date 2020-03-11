@@ -3,19 +3,20 @@ use crate::config;
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
 
-pub fn random(ecs: &mut World, start: Position, cfg: config::Monsters) {
+pub fn random(ecs: &mut World, start: Position, cfg: &config::Monsters) {
     let roll: i32;
     {
         let mut rng = ecs.write_resource::<RandomNumberGenerator>();
         roll = rng.roll_dice(1, 2);
     }
     match roll {
-        1 => spawn(ecs, start, &cfg, &cfg.orc),
-        _ => spawn(ecs, start, &cfg, &cfg.goblin),
+        1 => spawn(ecs, start, cfg, &cfg.orc),
+        _ => spawn(ecs, start, cfg, &cfg.goblin),
     }
 }
 
 pub fn spawn(ecs: &mut World, start: Position, cfg: &config::Monsters, m: &config::Monster) {
+    log::debug!("Creating monster at {:?} ...", start);
     ecs.create_entity()
         .with(start)
         .with(Renderable {

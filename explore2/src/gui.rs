@@ -2,42 +2,28 @@ use crate::components;
 use crate::config;
 use crate::game;
 use crate::map;
-use rltk::{Console, Point, Rltk, RGB};
+use rltk::{Console, Point, Rltk, VirtualKeyCode, RGB};
 use specs;
 use specs::prelude::*;
 
 #[derive(Default)]
-pub struct TextArea {
-    pub height: i32,
-}
-
-#[derive(Default)]
-pub struct MapArea {
-    pub width: i32,
-    pub height: i32,
-}
-
-#[derive(Default)]
 pub struct GUI {
-    pub map_area: MapArea,
-    pub text_area: TextArea,
+    pub map_area: config::MapArea,
+    pub text_area: config::TextArea,
     pub width: i32,
     pub height: i32,
+    pub fg_color: (u8, u8, u8),
+    pub bg_color: (u8, u8, u8),
 }
 
-pub fn new(cfg: &config::AppConfig) -> GUI {
-    let text_area = TextArea {
-        height: cfg.text_area.height,
-    };
-    let map_area = MapArea {
-        width: cfg.map.width,
-        height: cfg.map.height,
-    };
+pub fn new(cfg: &config::Gui) -> GUI {
     GUI {
-        map_area: map_area,
-        text_area: text_area,
-        width: cfg.map.width,
-        height: cfg.map.height + cfg.text_area.height,
+        map_area: cfg.map_area,
+        text_area: cfg.text_area,
+        width: cfg.map_area.width,
+        height: cfg.map_area.height + cfg.text_area.height,
+        fg_color: cfg.fg_color,
+        bg_color: cfg.bg_color,
     }
 }
 
@@ -48,8 +34,8 @@ pub fn draw(ecs: &World, ctx: &mut Rltk) {
         gui.map_area.height - 1,
         gui.width - 1,
         gui.text_area.height,
-        RGB::named(rltk::WHITE),
-        RGB::named(rltk::BLACK),
+        RGB::named(gui.fg_color),
+        RGB::named(gui.bg_color),
     );
 
     let combat_stats = ecs.read_storage::<components::CombatStats>();
@@ -60,6 +46,7 @@ pub fn draw(ecs: &World, ctx: &mut Rltk) {
         ctx.print_color(
             12,
             gui.map_area.height - 1,
+            // XXX add colors to config
             RGB::named(rltk::YELLOW),
             RGB::named(rltk::BLACK),
             &health,
@@ -71,6 +58,7 @@ pub fn draw(ecs: &World, ctx: &mut Rltk) {
             51,
             stats.hp,
             stats.max_hp,
+            // XXX add colors to config
             RGB::named(rltk::GREEN),
             RGB::named(rltk::BLACK),
         );
@@ -182,5 +170,192 @@ fn _draw_tooltips(ecs: &World, ctx: &mut Rltk) {
                 &"<-".to_string(),
             );
         }
+    }
+}
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum ItemMenuResult {
+    Cancel,
+    NoResponse,
+    Selected,
+}
+
+pub fn show_inventory(
+    gs: &mut game::state::State,
+    ctx: &mut Rltk,
+) -> (ItemMenuResult, Option<Entity>) {
+    let player_entity = gs.ecs.fetch::<Entity>();
+    let names = gs.ecs.read_storage::<components::Name>();
+    let backpack = gs.ecs.read_storage::<components::InBackpack>();
+    let entities = gs.ecs.entities();
+
+    let inventory = (&backpack, &names)
+        .join()
+        .filter(|item| item.0.owner == *player_entity);
+    let count = inventory.count();
+
+    let mut y = (25 - (count / 2)) as i32;
+    ctx.draw_box(
+        15,
+        y - 2,
+        31,
+        (count + 3) as i32,
+        RGB::named(rltk::WHITE),
+        RGB::named(rltk::BLACK),
+    );
+    ctx.print_color(
+        18,
+        y - 2,
+        RGB::named(rltk::YELLOW),
+        RGB::named(rltk::BLACK),
+        "Inventory",
+    );
+    ctx.print_color(
+        18,
+        y + count as i32 + 1,
+        RGB::named(rltk::YELLOW),
+        RGB::named(rltk::BLACK),
+        "ESCAPE to cancel",
+    );
+
+    let mut equippable: Vec<Entity> = Vec::new();
+    let mut j = 0;
+    for (entity, _pack, name) in (&entities, &backpack, &names)
+        .join()
+        .filter(|item| item.1.owner == *player_entity)
+    {
+        ctx.set(
+            17,
+            y,
+            RGB::named(rltk::WHITE),
+            RGB::named(rltk::BLACK),
+            rltk::to_cp437('('),
+        );
+        ctx.set(
+            18,
+            y,
+            RGB::named(rltk::YELLOW),
+            RGB::named(rltk::BLACK),
+            97 + j as u8,
+        );
+        ctx.set(
+            19,
+            y,
+            RGB::named(rltk::WHITE),
+            RGB::named(rltk::BLACK),
+            rltk::to_cp437(')'),
+        );
+
+        ctx.print(21, y, &name.name.to_string());
+        equippable.push(entity);
+        y += 1;
+        j += 1;
+    }
+
+    match ctx.key {
+        None => (ItemMenuResult::NoResponse, None),
+        Some(key) => match key {
+            VirtualKeyCode::Escape => (ItemMenuResult::Cancel, None),
+            _ => {
+                let selection = rltk::letter_to_option(key);
+                if selection > -1 && selection < count as i32 {
+                    return (
+                        ItemMenuResult::Selected,
+                        Some(equippable[selection as usize]),
+                    );
+                }
+                (ItemMenuResult::NoResponse, None)
+            }
+        },
+    }
+}
+
+pub fn drop_item_menu(
+    gs: &mut game::state::State,
+    ctx: &mut Rltk,
+) -> (ItemMenuResult, Option<Entity>) {
+    let player_entity = gs.ecs.fetch::<Entity>();
+    let names = gs.ecs.read_storage::<components::Name>();
+    let backpack = gs.ecs.read_storage::<components::InBackpack>();
+    let entities = gs.ecs.entities();
+
+    let inventory = (&backpack, &names)
+        .join()
+        .filter(|item| item.0.owner == *player_entity);
+    let count = inventory.count();
+
+    let mut y = (25 - (count / 2)) as i32;
+    ctx.draw_box(
+        15,
+        y - 2,
+        31,
+        (count + 3) as i32,
+        RGB::named(rltk::WHITE),
+        RGB::named(rltk::BLACK),
+    );
+    ctx.print_color(
+        18,
+        y - 2,
+        RGB::named(rltk::YELLOW),
+        RGB::named(rltk::BLACK),
+        "Drop Which Item?",
+    );
+    ctx.print_color(
+        18,
+        y + count as i32 + 1,
+        RGB::named(rltk::YELLOW),
+        RGB::named(rltk::BLACK),
+        "ESCAPE to cancel",
+    );
+
+    let mut equippable: Vec<Entity> = Vec::new();
+    let mut j = 0;
+    for (entity, _pack, name) in (&entities, &backpack, &names)
+        .join()
+        .filter(|item| item.1.owner == *player_entity)
+    {
+        ctx.set(
+            17,
+            y,
+            RGB::named(rltk::WHITE),
+            RGB::named(rltk::BLACK),
+            rltk::to_cp437('('),
+        );
+        ctx.set(
+            18,
+            y,
+            RGB::named(rltk::YELLOW),
+            RGB::named(rltk::BLACK),
+            97 + j as u8,
+        );
+        ctx.set(
+            19,
+            y,
+            RGB::named(rltk::WHITE),
+            RGB::named(rltk::BLACK),
+            rltk::to_cp437(')'),
+        );
+
+        ctx.print(21, y, &name.name.to_string());
+        equippable.push(entity);
+        y += 1;
+        j += 1;
+    }
+
+    match ctx.key {
+        None => (ItemMenuResult::NoResponse, None),
+        Some(key) => match key {
+            VirtualKeyCode::Escape => (ItemMenuResult::Cancel, None),
+            _ => {
+                let selection = rltk::letter_to_option(key);
+                if selection > -1 && selection < count as i32 {
+                    return (
+                        ItemMenuResult::Selected,
+                        Some(equippable[selection as usize]),
+                    );
+                }
+                (ItemMenuResult::NoResponse, None)
+            }
+        },
     }
 }

@@ -79,14 +79,14 @@ impl Map {
     /// Makes a new map using the algorithm from http://rogueliketutorials.com/tutorials/tcod/part-3/
     /// This gives a handful of random rooms and corridors joining them together.
     pub fn new_map_rooms_and_corridors(cfg: &config::AppConfig) -> Map {
-        let width = cfg.map.width;
-        let height = cfg.map.height;
+        let width = cfg.gui.map_area.width;
+        let height = cfg.gui.map_area.height;
         let tile_count = width * height;
         let mut map = Map {
             tiles: vec![TileType::Wall; tile_count as usize],
             rooms: Vec::new(),
-            width: cfg.map.width,
-            height: cfg.map.height,
+            width: cfg.gui.map_area.width,
+            height: cfg.gui.map_area.height,
             revealed_tiles: vec![false; tile_count as usize],
             visible_tiles: vec![false; tile_count as usize],
             blocked: vec![false; tile_count as usize],
@@ -95,9 +95,9 @@ impl Map {
 
         let mut rng = RandomNumberGenerator::new();
 
-        for _i in 0..cfg.map.rooms.max_count {
-            let w = rng.range(cfg.map.rooms.min_size, cfg.map.rooms.max_size);
-            let h = rng.range(cfg.map.rooms.min_size, cfg.map.rooms.max_size);
+        for _i in 0..cfg.rooms.max_count {
+            let w = rng.range(cfg.rooms.min_size, cfg.rooms.max_size);
+            let h = rng.range(cfg.rooms.min_size, cfg.rooms.max_size);
             let x = rng.roll_dice(1, map.width - w - 1) - 1;
             let y = rng.roll_dice(1, map.height - h - 1) - 1;
             let new_room = rect::Rect::new(x, y, w, h);

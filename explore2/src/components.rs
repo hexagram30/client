@@ -1,9 +1,8 @@
-use rltk;
 use rltk::RGB;
 use specs::prelude::*;
 use specs_derive::*;
 
-#[derive(Clone, Component)]
+#[derive(Clone, Component, Debug)]
 pub struct Position {
     pub x: i32,
     pub y: i32,
@@ -54,4 +53,33 @@ pub struct WantsToMelee {
 #[derive(Component, Debug)]
 pub struct SufferDamage {
     pub amount: i32,
+}
+
+#[derive(Component, Debug)]
+pub struct Item {}
+
+#[derive(Component, Debug)]
+pub struct Potion {
+    pub heal_amount: i32,
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct InBackpack {
+    pub owner: Entity,
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToPickupItem {
+    pub collected_by: Entity,
+    pub item: Entity,
+}
+
+#[derive(Component, Debug)]
+pub struct WantsToDrinkPotion {
+    pub potion: Entity,
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct WantsToDropItem {
+    pub item: Entity,
 }
