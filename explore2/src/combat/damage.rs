@@ -15,7 +15,7 @@ impl<'a> System<'a> for DamageSystem {
         let (mut stats, mut damage) = data;
 
         for (mut stats, damage) in (&mut stats, &damage).join() {
-            stats.hp -= damage.amount.iter().sum::<i32>();
+            stats.hp -= damage.amount;
         }
 
         damage.clear();

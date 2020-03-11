@@ -37,16 +37,16 @@ impl<'a> System<'a> for MeleeSystem {
                             "{} hits {}, for {} hp.",
                             &name.name, &target_name.name, damage
                         ));
-                        components::SufferDamage::new_damage(
-                            &mut inflict_damage,
-                            wants_melee.target,
-                            damage,
-                        );
+                        inflict_damage
+                            .insert(
+                                wants_melee.target,
+                                components::SufferDamage { amount: damage },
+                            )
+                            .expect("Unable to do damage");
                     }
                 }
             }
         }
-
         wants_melee.clear();
     }
 }
