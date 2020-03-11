@@ -55,8 +55,8 @@ pub struct Monster {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Monsters {
-    pub monster1: Monster,
-    pub monster2: Monster,
+    pub orc: Monster,
+    pub goblin: Monster,
     pub fg_color: (u8, u8, u8),
     pub bg_color: (u8, u8, u8),
     pub view_range: ViewRange,

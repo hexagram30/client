@@ -33,7 +33,7 @@ monsters:
   bg_color: [0,0,0]
   view_range:
     tile_count: 3
-  monster1:
+  goblin:
     name: "Goblin"
     chr: "g"
     stats:
@@ -41,7 +41,7 @@ monsters:
       starting_hp: 10
       defense: 1
       power: 2
-  monster2:
+  orc:
     name: "Orc"
     chr: "o"
     stats:
@@ -61,3 +61,7 @@ map:
 
 text_area:
   height: 6
+
+rooms:
+  max_monsters: 4
+  max_items: 2

@@ -3,7 +3,7 @@ use rltk::RGB;
 use specs::prelude::*;
 use specs_derive::*;
 
-#[derive(Component)]
+#[derive(Clone, Component)]
 pub struct Position {
     pub x: i32,
     pub y: i32,
@@ -14,6 +14,7 @@ pub struct Renderable {
     pub glyph: u8,
     pub fg: RGB,
     pub bg: RGB,
+    pub render_order: i32,
 }
 
 #[derive(Component, Debug)]
