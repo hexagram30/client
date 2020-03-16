@@ -10,6 +10,8 @@ name = "explore2"
 [dependencies]
 config = "0.10.1"
 log = "0.4.6"
+#rltk = { version = "0.6.2", default-features = false, features = ["crossterm"] }
+#rltk = { version = "0.6.2", default-features = false, features = ["curses"] }
 rltk = "0.6.2"
 serde = { version = "1.0.104", features = ["derive"] }
 specs = "0.15.1"

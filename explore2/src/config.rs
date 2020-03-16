@@ -4,7 +4,7 @@ use specs::prelude::*;
 use specs_derive::*;
 use twyg::LoggerOpts;
 
-const ENV_PREFIX: &str = "EXP";
+const ENV_PREFIX: &str = "EXP_";
 const CONFIG_FILE: &str = "config";
 
 #[derive(Clone, Debug, Deserialize)]
@@ -85,23 +85,30 @@ pub struct TextArea {
 pub struct Gui {
     pub bg_color: (u8, u8, u8),
     pub fg_color: (u8, u8, u8),
+    pub cursor_color: (u8, u8, u8),
     pub fullscreen: bool,
     pub map_area: MapArea,
     pub text_area: TextArea,
 }
 
 #[derive(Clone, Debug, Deserialize)]
-pub struct HealthPotion {
+pub struct Item {
     pub name: String,
     pub chr: char,
-    pub hp: i32,
+    pub fg_color: (u8, u8, u8),
+    pub bg_color: (u8, u8, u8),
+    pub power: i32,
+    pub range: Option<i32>,
+    pub radius: Option<i32>,
+    pub duration: Option<i32>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Items {
-    pub fg_color: (u8, u8, u8),
-    pub bg_color: (u8, u8, u8),
-    pub health_potion: HealthPotion,
+    pub health_potion: Item,
+    pub fireball_scroll: Item,
+    pub magic_missile_scroll: Item,
+    pub confusion_scroll: Item,
 }
 #[derive(Clone, Component, Debug, Deserialize)]
 pub struct AppConfig {

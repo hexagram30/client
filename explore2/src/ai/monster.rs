@@ -21,6 +21,7 @@ impl<'a> System<'a> for MonsterAI {
         ReadStorage<'a, components::Monster>,
         WriteStorage<'a, components::Position>,
         WriteStorage<'a, components::WantsToMelee>,
+        WriteStorage<'a, components::Confusion>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -34,41 +35,46 @@ impl<'a> System<'a> for MonsterAI {
             monster,
             mut position,
             mut wants_to_melee,
+            mut confused,
         ) = data;
 
         if *runstate != game::state::RunState::MonsterTurn {
             return;
         }
 
-        for (entity, mut viewshed, _monster, mut pos) in
-            (&entities, &mut viewshed, &monster, &mut position).join()
-        {
-            let distance =
-                rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
-            if distance < 1.5 {
-                wants_to_melee
-                    .insert(
-                        entity,
-                        components::WantsToMelee {
-                            target: *player_entity,
-                        },
-                    )
-                    .expect("Unable to insert attack");
-            } else if viewshed.visible_tiles.contains(&*player_pos) {
-                // Path to the player
-                let path = rltk::a_star_search(
-                    game_map.xy_idx(pos.x, pos.y),
-                    game_map.xy_idx(player_pos.x, player_pos.y),
-                    &mut *game_map,
-                );
-                if path.success && path.steps.len() > 1 {
-                    let mut idx = game_map.xy_idx(pos.x, pos.y);
-                    game_map.blocked[idx] = false;
-                    pos.x = path.steps[1] as i32 % game_map.width;
-                    pos.y = path.steps[1] as i32 / game_map.width;
-                    idx = game_map.xy_idx(pos.x, pos.y);
-                    game_map.blocked[idx] = true;
-                    viewshed.dirty = true;
+        for (entity, mut viewshed,_monster,mut pos) in (&entities, &mut viewshed, &monster, &mut position).join() {
+            let mut can_act = true;
+
+            let is_confused = confused.get_mut(entity);
+            if let Some(i_am_confused) = is_confused {
+                i_am_confused.turns -= 1;
+                if i_am_confused.turns < 1 {
+                    confused.remove(entity);
+                }
+                can_act = false;
+            }
+
+            if can_act {
+                let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
+                if distance < 1.5 {
+                    wants_to_melee.insert(entity, components::WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
+                }
+                else if viewshed.visible_tiles.contains(&*player_pos) {
+                    // Path to the player
+                    let path = rltk::a_star_search(
+                        game_map.xy_idx(pos.x, pos.y),
+                        game_map.xy_idx(player_pos.x, player_pos.y),
+                        &mut *game_map
+                    );
+                    if path.success && path.steps.len()>1 {
+                        let mut idx = game_map.xy_idx(pos.x, pos.y);
+                        game_map.blocked[idx] = false;
+                        pos.x = path.steps[1] as i32 % game_map.width;
+                        pos.y = path.steps[1] as i32 / game_map.width;
+                        idx = game_map.xy_idx(pos.x, pos.y);
+                        game_map.blocked[idx] = true;
+                        viewshed.dirty = true;
+                    }
                 }
             }
         }

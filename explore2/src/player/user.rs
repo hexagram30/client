@@ -78,10 +78,10 @@ pub fn input(gs: &mut game::state::State, ctx: &mut Rltk) -> game::state::RunSta
             VirtualKeyCode::Key9 | VirtualKeyCode::E => try_move(1, -1, &mut gs.ecs),
             VirtualKeyCode::Key3 | VirtualKeyCode::C => try_move(1, 1, &mut gs.ecs),
             VirtualKeyCode::Key1 | VirtualKeyCode::Z => try_move(-1, 1, &mut gs.ecs),
-            // Picking up items
-            VirtualKeyCode::G => character::get_item(&mut gs.ecs),
+            // Items management
+            VirtualKeyCode::P => character::get_item(&mut gs.ecs), // pick-up
             VirtualKeyCode::I => return game::state::RunState::ShowInventory,
-            VirtualKeyCode::L => return game::state::RunState::ShowDropItem,
+            VirtualKeyCode::L => return game::state::RunState::ShowDropItem, // let-go
 
             VirtualKeyCode::Space => {
                 log::debug!("Pausing game ...");

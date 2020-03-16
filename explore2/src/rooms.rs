@@ -16,7 +16,7 @@ pub fn spawn(ecs: &mut World, room: &rect::Rect, cfg: &config::AppConfig) {
     {
         let mut rng = ecs.write_resource::<rltk::RandomNumberGenerator>();
         let num_monsters = rng.roll_dice(1, cfg.rooms.max_monsters + 2) - 3;
-        let num_items = rng.roll_dice(1, cfg.rooms.max_items + 2) - 3;
+        let num_items = rng.roll_dice(1, cfg.rooms.max_items + 2) - 1;
 
         log::debug!("Calculating monster locations ...");
         for _i in 0..num_monsters {

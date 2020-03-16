@@ -15,7 +15,7 @@ impl<'a> System<'a> for DamageSystem {
         let (mut stats, mut damage) = data;
 
         for (mut stats, damage) in (&mut stats, &damage).join() {
-            stats.hp -= damage.amount;
+            stats.hp -= damage.amount.iter().sum::<i32>();
         }
 
         damage.clear();
@@ -50,5 +50,16 @@ pub fn delete_the_dead(ecs: &mut World) {
 
     for victim in dead {
         ecs.delete_entity(victim).expect("Unable to delete");
+    }
+}
+
+impl components::SufferDamage {
+    pub fn new_damage(store: &mut WriteStorage<components::SufferDamage>, victim: Entity, amount: i32) {
+        if let Some(suffering) = store.get_mut(victim) {
+            suffering.amount.push(amount);
+        } else {
+            let dmg = components::SufferDamage { amount: vec![amount] };
+            store.insert(victim, dmg).expect("Unable to insert damage");
+        }
     }
 }

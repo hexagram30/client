@@ -14,6 +14,7 @@ pub struct GUI {
     pub height: i32,
     pub fg_color: (u8, u8, u8),
     pub bg_color: (u8, u8, u8),
+    pub cursor_color: (u8, u8, u8),
 }
 
 pub fn new(cfg: &config::Gui) -> GUI {
@@ -24,6 +25,7 @@ pub fn new(cfg: &config::Gui) -> GUI {
         height: cfg.map_area.height + cfg.text_area.height,
         fg_color: cfg.fg_color,
         bg_color: cfg.bg_color,
+        cursor_color: cfg.cursor_color,
     }
 }
 
@@ -76,13 +78,13 @@ pub fn draw(ecs: &World, ctx: &mut Rltk) {
 
     // XXX This isn't working for the current layout ...
     // Draw mouse cursor
-    // let mouse_pos = ctx.mouse_pos();
-    // ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::MAGENTA));
-    // draw_tooltips(ecs, ctx);
+    let mouse_pos = ctx.mouse_pos();
+    ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(gui.cursor_color));
+    draw_tooltips(ecs, ctx);
 }
 
 // XXX This isn't working for the current layout ...
-fn _draw_tooltips(ecs: &World, ctx: &mut Rltk) {
+fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     let map = ecs.fetch::<map::Map>();
     let names = ecs.read_storage::<components::Name>();
     let positions = ecs.read_storage::<components::Position>();
@@ -358,4 +360,46 @@ pub fn drop_item_menu(
             }
         },
     }
+}
+
+pub fn ranged_target(gs : &mut game::state::State, ctx : &mut Rltk, range : i32) -> (ItemMenuResult, Option<Point>) {
+    let player_entity = gs.ecs.fetch::<Entity>();
+    let player_pos = gs.ecs.fetch::<Point>();
+    let viewsheds = gs.ecs.read_storage::<components::Viewshed>();
+
+    ctx.print_color(5, 0, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "Select Target:");
+
+    // Highlight available target cells
+    let mut available_cells = Vec::new();
+    let visible = viewsheds.get(*player_entity);
+    if let Some(visible) = visible {
+        // We have a viewshed
+        for idx in visible.visible_tiles.iter() {
+            let distance = rltk::DistanceAlg::Pythagoras.distance2d(*player_pos, *idx);
+            if distance <= range as f32 {
+                ctx.set_bg(idx.x, idx.y, RGB::named(rltk::BLUE));
+                available_cells.push(idx);
+            }
+        }
+    } else {
+        return (ItemMenuResult::Cancel, None);
+    }
+
+    // Draw mouse cursor
+    let mouse_pos = ctx.mouse_pos();
+    let mut valid_target = false;
+    for idx in available_cells.iter() { if idx.x == mouse_pos.0 && idx.y == mouse_pos.1 { valid_target = true; } }
+    if valid_target {
+        ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::CYAN));
+        if ctx.left_click {
+            return (ItemMenuResult::Selected, Some(Point::new(mouse_pos.0, mouse_pos.1)));
+        }
+    } else {
+        ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::RED));
+        if ctx.left_click {
+            return (ItemMenuResult::Cancel, None);
+        }
+    }
+
+    (ItemMenuResult::NoResponse, None)
 }

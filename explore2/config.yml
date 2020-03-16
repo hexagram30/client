@@ -2,20 +2,21 @@ game:
   title: Planet Explorer
   welcome: Welcome to
 
-gui:
-  fullscreen: false
-  fg_color: [255,255,255]
-  bg_color: [0,0,0]
-  map_area:
-    width: 160
-    height: 74
-  text_area:
-    height: 6
-
 logging:
   colored: true
   level: debug
   report_caller: true
+
+gui:
+  fullscreen: false
+  fg_color: [255,255,255]
+  bg_color: [0,0,0]
+  cursor_color: [0,102,0]
+  map_area:
+    width: 200
+    height: 90
+  text_area:
+    height: 6
 
 npcs:
   count: 8
@@ -68,9 +69,31 @@ rooms:
   max_items: 2
 
 items:
-  fg_color: [255,0,255]
-  bg_color: [0,0,0]
   health_potion:
     name: "Health Potion"
     chr: "i"
-    hp: 8
+    fg_color: [255,0,255]
+    bg_color: [0,0,0]
+    power: 8
+  magic_missile_scroll:
+    name: "Magic Missile Scroll"
+    chr: ")"
+    fg_color: [0,255,255]
+    bg_color: [0,0,0]
+    range: 6
+    power: 8
+  fireball_scroll:
+    name: "Fireball Scroll"
+    chr: ")"
+    fg_color: [255,153,0]
+    bg_color: [0,0,0]
+    radius: 3
+    range: 6
+    power: 20
+  confusion_scroll:
+    name: "Confusion Scroll"
+    chr: ")"
+    fg_color: [255,153,204]
+    bg_color: [0,0,0]
+    range: 6
+    power: 4 # this is number of turns

@@ -43,11 +43,16 @@ fn main() {
     gs.ecs.register::<components::WantsToMelee>();
     gs.ecs.register::<components::SufferDamage>();
     gs.ecs.register::<components::Item>();
-    gs.ecs.register::<components::Potion>();
+    gs.ecs.register::<components::ProvidesHealing>();
+    gs.ecs.register::<components::InflictsDamage>();
+    gs.ecs.register::<components::AreaOfEffect>();
+    gs.ecs.register::<components::Consumable>();
+    gs.ecs.register::<components::Ranged>();
     gs.ecs.register::<components::InBackpack>();
     gs.ecs.register::<components::WantsToPickupItem>();
-    gs.ecs.register::<components::WantsToDrinkPotion>();
+    gs.ecs.register::<components::WantsToUseItem>();
     gs.ecs.register::<components::WantsToDropItem>();
+    gs.ecs.register::<components::Confusion>();
 
     log::debug!("Setting up Map ...");
     let game_map = map::Map::new_map_rooms_and_corridors(&cfg);
