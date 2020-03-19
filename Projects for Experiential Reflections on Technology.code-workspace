@@ -7,5 +7,7 @@
 			"path": "/Users/oubiwann/lab/oxur"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.autoSave": "onWindowChange"
+	}
 }

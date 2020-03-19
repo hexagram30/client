@@ -83,13 +83,12 @@ pub fn input(gs: &mut game::state::State, ctx: &mut Rltk) -> game::state::RunSta
             VirtualKeyCode::I => return game::state::RunState::ShowInventory,
             VirtualKeyCode::L => return game::state::RunState::ShowDropItem, // let-go
 
+            // Main menu
+            VirtualKeyCode::Escape => return game::state::RunState::ShowMainMenu,
+
             VirtualKeyCode::Space => {
                 log::debug!("Pausing game ...");
                 return game::state::RunState::Paused;
-            }
-            VirtualKeyCode::Escape => {
-                log::info!("Quitting ...");
-                return game::state::RunState::Quitting;
             }
             _ => {
                 log::debug!("Got user input: {:?}", key);

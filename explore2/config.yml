@@ -1,6 +1,9 @@
 game:
   title: Planet Explorer
   welcome: Welcome to
+  persistence:
+    dir: ./data/saves
+    file: game.json
 
 logging:
   colored: true

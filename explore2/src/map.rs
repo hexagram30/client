@@ -1,18 +1,21 @@
 use crate::components;
 use crate::config;
+use crate::game;
 use crate::rect;
+use crate::rooms;
 use rltk::{Algorithm2D, BaseMap, Console, Point, RandomNumberGenerator, Rltk, RGB};
+use serde::{Serialize, Deserialize};
 use specs;
 use specs::prelude::*;
 use std::cmp::{max, min};
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum TileType {
     Wall,
     Floor,
 }
 
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize, Clone)]
 pub struct Map {
     pub tiles: Vec<TileType>,
     pub rooms: Vec<rect::Rect>,
@@ -21,7 +24,22 @@ pub struct Map {
     pub revealed_tiles: Vec<bool>,
     pub visible_tiles: Vec<bool>,
     pub blocked: Vec<bool>,
+
+    #[serde(skip_serializing)]
+    #[serde(skip_deserializing)]
     pub tile_content: Vec<Vec<Entity>>,
+}
+
+
+pub fn new(cfg: &config::AppConfig, gs: &mut game::state::State) -> Map {
+    log::debug!("Setting up Map ...");
+    let game_map = Map::new_map_rooms_and_corridors(&cfg);
+    log::debug!("Created {} rooms.", game_map.rooms.len());
+    for (i, room) in game_map.rooms.iter().skip(1).enumerate() {
+        log::trace!("Setting up room {} ...", i);
+        rooms::spawn(&mut gs.ecs, room, &cfg);
+    }
+    game_map
 }
 
 impl Map {

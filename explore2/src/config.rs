@@ -1,16 +1,26 @@
 use cfglib;
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use specs::prelude::*;
 use specs_derive::*;
+use std::fs;
+use std::path::{Path, PathBuf};
 use twyg::LoggerOpts;
 
 const ENV_PREFIX: &str = "EXP_";
 const CONFIG_FILE: &str = "config";
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Persistence {
+    pub dir: String,
+    pub file: String,
+    pub path: Option<PathBuf>,
+}
+
+#[derive(Clone, Component, Debug, Deserialize, Serialize)]
 pub struct Game {
     pub title: String,
     pub welcome: String,
+    pub persistence: Persistence,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -110,7 +120,7 @@ pub struct Items {
     pub magic_missile_scroll: Item,
     pub confusion_scroll: Item,
 }
-#[derive(Clone, Component, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct AppConfig {
     pub game: Game,
     pub gui: Gui,
@@ -125,8 +135,35 @@ pub struct AppConfig {
 impl AppConfig {
     pub fn new() -> Self {
         match new_app_config() {
-            Ok(c) => c,
+            Ok(mut c) => {
+                c.game.create_savegame_dir();
+                c
+            },
             Err(_) => panic!("Configuration error: check the config file"),
+        }
+    }
+}
+
+impl Game {
+    pub fn create_savegame_dir(&mut self) {
+        let file = self.persistence.dir.clone();
+        let dir = Path::new(&file);
+        self.persistence.path = Some(dir.join(&self.persistence.file.clone()));
+        match fs::create_dir_all(dir) {
+            Ok(_) => log::debug!("Created directory for save games."),
+            Err(err) => log::error!("{:?}", err),
+        }
+    }
+
+    pub fn savegame_path(&self) -> &str {
+        match self.persistence.path.as_ref() {
+            None => panic!("Couldn't get savegame path!"),
+            Some(r) => {
+                match r.to_str() {
+                    None => panic!("Couldn't get savegame path!"),
+                    Some(p) => p,
+                }
+            }
         }
     }
 }
