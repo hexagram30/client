@@ -7,7 +7,9 @@ use log;
 use specs;
 use specs::error::NoError;
 use specs::prelude::*;
-use specs::saveload::{SimpleMarker, SimpleMarkerAllocator, SerializeComponents, DeserializeComponents, MarkedBuilder};
+use specs::saveload::{
+    DeserializeComponents, MarkedBuilder, SerializeComponents, SimpleMarker, SimpleMarkerAllocator,
+};
 use std::fs;
 
 pub fn setup(cfg: config::AppConfig, gs: &mut game::state::State) {
@@ -44,7 +46,8 @@ pub fn setup(cfg: config::AppConfig, gs: &mut game::state::State) {
     gs.ecs.register::<components::SerializationHelper>();
 
     log::debug!("Inserting serializer helper ...");
-    gs.ecs.insert(SimpleMarkerAllocator::<components::SerializeMe>::new());
+    gs.ecs
+        .insert(SimpleMarkerAllocator::<components::SerializeMe>::new());
     log::debug!("Inserting RNG ...");
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
@@ -66,7 +69,7 @@ pub fn setup(cfg: config::AppConfig, gs: &mut game::state::State) {
     log::info!("Completed world setup");
 }
 
-pub fn delete (ecs: &mut World) {
+pub fn delete(ecs: &mut World) {
     // Delete everything
     let mut to_delete = Vec::new();
     for e in ecs.entities().join() {
@@ -77,7 +80,7 @@ pub fn delete (ecs: &mut World) {
     }
 }
 
-pub fn update (ecs: &mut World) {
+pub fn update(ecs: &mut World) {
     let mut deleteme: Option<Entity> = None;
     {
         let entities = ecs.entities();
@@ -85,20 +88,22 @@ pub fn update (ecs: &mut World) {
         let player = ecs.read_storage::<components::Player>();
         let position = ecs.read_storage::<components::Position>();
         let game_map = ecs.fetch::<map::Map>();
-        for (e,h) in (&entities, &helper).join() {
+        for (e, h) in (&entities, &helper).join() {
             let mut worldmap = ecs.write_resource::<map::Map>();
             *worldmap = h.map.clone();
-            worldmap.tile_content = vec![Vec::new(); game_map.width as usize * game_map.height as usize];
+            worldmap.tile_content =
+                vec![Vec::new(); game_map.width as usize * game_map.height as usize];
             deleteme = Some(e);
         }
-        for (e,_p,pos) in (&entities, &player, &position).join() {
+        for (e, _p, pos) in (&entities, &player, &position).join() {
             let mut ppos = ecs.write_resource::<rltk::Point>();
             *ppos = rltk::Point::new(pos.x, pos.y);
             let mut player_resource = ecs.write_resource::<Entity>();
             *player_resource = e;
         }
     }
-    ecs.delete_entity(deleteme.unwrap()).expect("Unable to delete helper");
+    ecs.delete_entity(deleteme.unwrap())
+        .expect("Unable to delete helper");
 }
 
 macro_rules! serialize_individually {
@@ -116,12 +121,37 @@ macro_rules! serialize_individually {
 }
 
 pub fn unload(ecs: &mut World, writer: fs::File) {
-    let data = ( ecs.entities(), ecs.read_storage::<SimpleMarker<components::SerializeMe>>() );
+    let data = (
+        ecs.entities(),
+        ecs.read_storage::<SimpleMarker<components::SerializeMe>>(),
+    );
     let mut serializer = serde_json::Serializer::new(writer);
-    serialize_individually!(ecs, serializer, data, components::Position, components::Renderable, components::Player, components::Viewshed, components::Monster,
-        components::Name, components::BlocksTile, components::CombatStats, components::SufferDamage, components::WantsToMelee, components::Item, components::Consumable, components::Ranged, components::InflictsDamage,
-        components::AreaOfEffect, components::Confusion, components::ProvidesHealing, components::InBackpack, components::WantsToPickupItem, components::WantsToUseItem,
-        components::WantsToDropItem, components::SerializationHelper
+    serialize_individually!(
+        ecs,
+        serializer,
+        data,
+        components::Position,
+        components::Renderable,
+        components::Player,
+        components::Viewshed,
+        components::Monster,
+        components::Name,
+        components::BlocksTile,
+        components::CombatStats,
+        components::SufferDamage,
+        components::WantsToMelee,
+        components::Item,
+        components::Consumable,
+        components::Ranged,
+        components::InflictsDamage,
+        components::AreaOfEffect,
+        components::Confusion,
+        components::ProvidesHealing,
+        components::InBackpack,
+        components::WantsToPickupItem,
+        components::WantsToUseItem,
+        components::WantsToDropItem,
+        components::SerializationHelper
     );
 }
 
@@ -141,16 +171,39 @@ macro_rules! deserialize_individually {
 }
 
 pub fn load(ecs: &mut World, data: String) {
-    
     let mut de = serde_json::Deserializer::from_str(&data);
     // XXX This is currently broken ...
-    let mut d = (&mut ecs.entities_mut(), 
-                    &mut ecs.write_storage::<SimpleMarker<components::SerializeMe>>(), 
-                    &mut ecs.write_resource::<SimpleMarkerAllocator<components::SerializeMe>>());
+    let mut d = (
+        &mut ecs.entities_mut(),
+        &mut ecs.write_storage::<SimpleMarker<components::SerializeMe>>(),
+        &mut ecs.write_resource::<SimpleMarkerAllocator<components::SerializeMe>>(),
+    );
 
-    deserialize_individually!(ecs, de, d, components::Position, components::Renderable, components::Player, components::Viewshed, components::Monster,
-        components::Name, components::BlocksTile, components::CombatStats, components::SufferDamage, components::WantsToMelee, components::Item, components::Consumable, components::Ranged, components::InflictsDamage,
-        components::AreaOfEffect, components::Confusion, components::ProvidesHealing, components::InBackpack, components::WantsToPickupItem, components::WantsToUseItem,
-        components::WantsToDropItem, components::SerializationHelper
+    deserialize_individually!(
+        ecs,
+        de,
+        d,
+        components::Position,
+        components::Renderable,
+        components::Player,
+        components::Viewshed,
+        components::Monster,
+        components::Name,
+        components::BlocksTile,
+        components::CombatStats,
+        components::SufferDamage,
+        components::WantsToMelee,
+        components::Item,
+        components::Consumable,
+        components::Ranged,
+        components::InflictsDamage,
+        components::AreaOfEffect,
+        components::Confusion,
+        components::ProvidesHealing,
+        components::InBackpack,
+        components::WantsToPickupItem,
+        components::WantsToUseItem,
+        components::WantsToDropItem,
+        components::SerializationHelper
     );
 }

@@ -42,7 +42,9 @@ impl<'a> System<'a> for MonsterAI {
             return;
         }
 
-        for (entity, mut viewshed,_monster,mut pos) in (&entities, &mut viewshed, &monster, &mut position).join() {
+        for (entity, mut viewshed, _monster, mut pos) in
+            (&entities, &mut viewshed, &monster, &mut position).join()
+        {
             let mut can_act = true;
 
             let is_confused = confused.get_mut(entity);
@@ -55,18 +57,25 @@ impl<'a> System<'a> for MonsterAI {
             }
 
             if can_act {
-                let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
+                let distance =
+                    rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
                 if distance < 1.5 {
-                    wants_to_melee.insert(entity, components::WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
-                }
-                else if viewshed.visible_tiles.contains(&*player_pos) {
+                    wants_to_melee
+                        .insert(
+                            entity,
+                            components::WantsToMelee {
+                                target: *player_entity,
+                            },
+                        )
+                        .expect("Unable to insert attack");
+                } else if viewshed.visible_tiles.contains(&*player_pos) {
                     // Path to the player
                     let path = rltk::a_star_search(
                         game_map.xy_idx(pos.x, pos.y),
                         game_map.xy_idx(player_pos.x, player_pos.y),
-                        &mut *game_map
+                        &mut *game_map,
                     );
-                    if path.success && path.steps.len()>1 {
+                    if path.success && path.steps.len() > 1 {
                         let mut idx = game_map.xy_idx(pos.x, pos.y);
                         game_map.blocked[idx] = false;
                         pos.x = path.steps[1] as i32 % game_map.width;

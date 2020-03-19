@@ -8,9 +8,8 @@ use specs::prelude::*;
 
 #[derive(Clone)]
 pub struct Character {
-    pub location: Point,
-    pub entity: Entity,
-    
+  pub location: Point,
+  pub entity: Entity,
 }
 
 pub fn new(cfg: &config::AppConfig, gs: &mut game::state::State, game_map: &map::Map) -> Character {
@@ -18,10 +17,14 @@ pub fn new(cfg: &config::AppConfig, gs: &mut game::state::State, game_map: &map:
   let (player_x, player_y) = game_map.rooms[0].center();
   Character {
     location: Point::new(player_x, player_y),
-    entity: spawn(&mut gs.ecs, components::Position {
-      x: player_x,
-      y: player_y,
-  }, cfg.player.clone()),
+    entity: spawn(
+      &mut gs.ecs,
+      components::Position {
+        x: player_x,
+        y: player_y,
+      },
+      cfg.player.clone(),
+    ),
   }
 }
 

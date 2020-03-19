@@ -21,9 +21,14 @@ pub enum RunState {
     Quitting,
     ShowDropItem,
     ShowInventory,
-    ShowTargeting { range : i32, item : Entity},
+    ShowTargeting {
+        range: i32,
+        item: Entity,
+    },
     ShowMainMenu,
-    MainMenu { menu_selection : menus::main::Selection },
+    MainMenu {
+        menu_selection: menus::main::Selection,
+    },
     StartNewGame,
     SaveGame,
     LoadGame,
@@ -68,7 +73,7 @@ impl GameState for State {
         ctx.cls();
 
         match newrunstate {
-            RunState::MainMenu{..} => {}
+            RunState::MainMenu { .. } => {}
             _ => {
                 map::draw(&self.ecs, ctx);
 
@@ -78,10 +83,12 @@ impl GameState for State {
                     let game_map = self.ecs.fetch::<map::Map>();
 
                     let mut data = (&positions, &renderables).join().collect::<Vec<_>>();
-                    data.sort_by(|&a, &b| b.1.render_order.cmp(&a.1.render_order) );
+                    data.sort_by(|&a, &b| b.1.render_order.cmp(&a.1.render_order));
                     for (pos, render) in data.iter() {
                         let idx = game_map.xy_idx(pos.x, pos.y);
-                        if game_map.visible_tiles[idx] { ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph) }
+                        if game_map.visible_tiles[idx] {
+                            ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph)
+                        }
                     }
 
                     gui::draw(&self.ecs, ctx);
@@ -118,13 +125,21 @@ impl GameState for State {
                         let is_ranged = self.ecs.read_storage::<components::Ranged>();
                         let is_item_ranged = is_ranged.get(item_entity);
                         if let Some(is_item_ranged) = is_item_ranged {
-                            newrunstate = RunState::ShowTargeting{ 
-                                range: is_item_ranged.range, 
-                                item: item_entity };
+                            newrunstate = RunState::ShowTargeting {
+                                range: is_item_ranged.range,
+                                item: item_entity,
+                            };
                         } else {
                             let mut intent = self.ecs.write_storage::<components::WantsToUseItem>();
-                            intent.insert(*self.ecs.fetch::<Entity>(), components::WantsToUseItem{ 
-                                item: item_entity, target: None }).expect("Unable to insert intent");
+                            intent
+                                .insert(
+                                    *self.ecs.fetch::<Entity>(),
+                                    components::WantsToUseItem {
+                                        item: item_entity,
+                                        target: None,
+                                    },
+                                )
+                                .expect("Unable to insert intent");
                             newrunstate = RunState::PlayerTurn;
                         }
                     }
@@ -148,30 +163,45 @@ impl GameState for State {
                     }
                 }
             }
-            RunState::ShowTargeting{range, item} => {
+            RunState::ShowTargeting { range, item } => {
                 let result = menus::target::ranged(self, ctx, range);
                 match result.0 {
                     menus::item::Result::Cancel => newrunstate = RunState::AwaitingInput,
                     menus::item::Result::NoResponse => {}
                     menus::item::Result::Selected => {
                         let mut intent = self.ecs.write_storage::<components::WantsToUseItem>();
-                        intent.insert(*self.ecs.fetch::<Entity>(), components::WantsToUseItem{ 
-                            item, target: result.1 }).expect("Unable to insert intent");
+                        intent
+                            .insert(
+                                *self.ecs.fetch::<Entity>(),
+                                components::WantsToUseItem {
+                                    item,
+                                    target: result.1,
+                                },
+                            )
+                            .expect("Unable to insert intent");
                         newrunstate = RunState::PlayerTurn;
                     }
                 }
             }
             RunState::ShowMainMenu => {
-                newrunstate = RunState::MainMenu{ menu_selection: menus::main::Selection::ContinuePlaying };
+                newrunstate = RunState::MainMenu {
+                    menu_selection: menus::main::Selection::ContinuePlaying,
+                };
             }
-            RunState::MainMenu{ .. } => {
+            RunState::MainMenu { .. } => {
                 let result = menus::main::draw(self, ctx);
                 match result {
-                    menus::main::Result::NoSelection{ selected } => newrunstate = RunState::MainMenu{ menu_selection: selected },
-                    menus::main::Result::Selected{ selected } => {
+                    menus::main::Result::NoSelection { selected } => {
+                        newrunstate = RunState::MainMenu {
+                            menu_selection: selected,
+                        }
+                    }
+                    menus::main::Result::Selected { selected } => {
                         log::debug!("Handling keypress for {:?}", selected);
                         match selected {
-                            menus::main::Selection::ContinuePlaying => newrunstate = RunState::AwaitingInput,
+                            menus::main::Selection::ContinuePlaying => {
+                                newrunstate = RunState::AwaitingInput
+                            }
                             menus::main::Selection::NewGame => newrunstate = RunState::StartNewGame,
                             menus::main::Selection::SaveGame => newrunstate = RunState::SaveGame,
                             menus::main::Selection::LoadGame => newrunstate = RunState::LoadGame,
@@ -184,7 +214,7 @@ impl GameState for State {
             RunState::StartNewGame => {
                 log::info!("Starting a new game is not yet implemented");
                 // XXX we can't do the following until we can essentially
-                // replace all the components properly ... re-running the 
+                // replace all the components properly ... re-running the
                 // main_loop here is just going to make the game hang ;-)
                 // log::info!("Starting new game ...");
                 // let cfg = config::AppConfig::new();

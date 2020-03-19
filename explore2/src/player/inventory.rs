@@ -85,9 +85,11 @@ impl<'a> System<'a> for ItemUseSystem {
             let mut used_item = true;
 
             // Targeting
-            let mut targets : Vec<Entity> = Vec::new();
+            let mut targets: Vec<Entity> = Vec::new();
             match useitem.target {
-                None => { targets.push( *player_entity ); }
+                None => {
+                    targets.push(*player_entity);
+                }
                 Some(target) => {
                     let area_effect = aoe.get(useitem.item);
                     match area_effect {
@@ -100,8 +102,14 @@ impl<'a> System<'a> for ItemUseSystem {
                         }
                         Some(area_effect) => {
                             // AoE
-                            let mut blast_tiles = rltk::field_of_view(target, area_effect.radius, &*game_map);
-                            blast_tiles.retain(|p| p.x > 0 && p.x < game_map.width-1 && p.y > 0 && p.y < game_map.height-1 );
+                            let mut blast_tiles =
+                                rltk::field_of_view(target, area_effect.radius, &*game_map);
+                            blast_tiles.retain(|p| {
+                                p.x > 0
+                                    && p.x < game_map.width - 1
+                                    && p.y > 0
+                                    && p.y < game_map.height - 1
+                            });
                             for tile_idx in blast_tiles.iter() {
                                 let idx = game_map.xy_idx(tile_idx.x, tile_idx.y);
                                 for mob in game_map.tile_content[idx].iter() {
@@ -124,7 +132,11 @@ impl<'a> System<'a> for ItemUseSystem {
                         if let Some(stats) = stats {
                             stats.hp = i32::min(stats.max_hp, stats.hp + healer.heal_amount);
                             if entity == *player_entity {
-                                gamelog.entries.push(format!("You use the {}, healing {} hp.", names.get(useitem.item).unwrap().name, healer.heal_amount));
+                                gamelog.entries.push(format!(
+                                    "You use the {}, healing {} hp.",
+                                    names.get(useitem.item).unwrap().name,
+                                    healer.heal_amount
+                                ));
                             }
                             used_item = true;
                         }
@@ -139,11 +151,18 @@ impl<'a> System<'a> for ItemUseSystem {
                 Some(damage) => {
                     used_item = false;
                     for mob in targets.iter() {
-                        components::SufferDamage::new_damage(&mut suffer_damage, *mob, damage.damage);
+                        components::SufferDamage::new_damage(
+                            &mut suffer_damage,
+                            *mob,
+                            damage.damage,
+                        );
                         if entity == *player_entity {
                             let mob_name = names.get(*mob).unwrap();
                             let item_name = names.get(useitem.item).unwrap();
-                            gamelog.entries.push(format!("You use {} on {}, inflicting {} hp.", item_name.name, mob_name.name, damage.damage));
+                            gamelog.entries.push(format!(
+                                "You use {} on {}, inflicting {} hp.",
+                                item_name.name, mob_name.name, damage.damage
+                            ));
                         }
 
                         used_item = true;
@@ -160,18 +179,23 @@ impl<'a> System<'a> for ItemUseSystem {
                     Some(confusion) => {
                         used_item = false;
                         for mob in targets.iter() {
-                            add_confusion.push((*mob, confusion.turns ));
+                            add_confusion.push((*mob, confusion.turns));
                             if entity == *player_entity {
                                 let mob_name = names.get(*mob).unwrap();
                                 let item_name = names.get(useitem.item).unwrap();
-                                gamelog.entries.push(format!("You use {} on {}, confusing them.", item_name.name, mob_name.name));
+                                gamelog.entries.push(format!(
+                                    "You use {} on {}, confusing them.",
+                                    item_name.name, mob_name.name
+                                ));
                             }
                         }
                     }
                 }
             }
             for mob in add_confusion.iter() {
-                confused.insert(mob.0, components::Confusion{ turns: mob.1 }).expect("Unable to insert status");
+                confused
+                    .insert(mob.0, components::Confusion { turns: mob.1 })
+                    .expect("Unable to insert status");
             }
 
             // If its a consumable, we delete it on use

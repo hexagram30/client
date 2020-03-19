@@ -5,12 +5,22 @@ use rltk::{Console, Point, Rltk, RGB};
 use specs;
 use specs::prelude::*;
 
-pub fn ranged(gs : &mut game::state::State, ctx : &mut Rltk, range : i32) -> (menus::item::Result, Option<Point>) {
+pub fn ranged(
+    gs: &mut game::state::State,
+    ctx: &mut Rltk,
+    range: i32,
+) -> (menus::item::Result, Option<Point>) {
     let player_entity = gs.ecs.fetch::<Entity>();
     let player_pos = gs.ecs.fetch::<Point>();
     let viewsheds = gs.ecs.read_storage::<components::Viewshed>();
 
-    ctx.print_color(5, 0, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "Select Target:");
+    ctx.print_color(
+        5,
+        0,
+        RGB::named(rltk::YELLOW),
+        RGB::named(rltk::BLACK),
+        "Select Target:",
+    );
 
     // Highlight available target cells
     let mut available_cells = Vec::new();
@@ -31,11 +41,18 @@ pub fn ranged(gs : &mut game::state::State, ctx : &mut Rltk, range : i32) -> (me
     // Draw mouse cursor
     let mouse_pos = ctx.mouse_pos();
     let mut valid_target = false;
-    for idx in available_cells.iter() { if idx.x == mouse_pos.0 && idx.y == mouse_pos.1 { valid_target = true; } }
+    for idx in available_cells.iter() {
+        if idx.x == mouse_pos.0 && idx.y == mouse_pos.1 {
+            valid_target = true;
+        }
+    }
     if valid_target {
         ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::CYAN));
         if ctx.left_click {
-            return (menus::item::Result::Selected, Some(Point::new(mouse_pos.0, mouse_pos.1)));
+            return (
+                menus::item::Result::Selected,
+                Some(Point::new(mouse_pos.0, mouse_pos.1)),
+            );
         }
     } else {
         ctx.set_bg(mouse_pos.0, mouse_pos.1, RGB::named(rltk::RED));

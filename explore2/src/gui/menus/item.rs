@@ -1,6 +1,6 @@
 use crate::components;
 use crate::game;
-use rltk::{Console, Rltk, RGB, VirtualKeyCode};
+use rltk::{Console, Rltk, VirtualKeyCode, RGB};
 use specs;
 use specs::prelude::*;
 
@@ -11,10 +11,7 @@ pub enum Result {
     Selected,
 }
 
-pub fn show_inventory(
-    gs: &mut game::state::State,
-    ctx: &mut Rltk,
-) -> (Result, Option<Entity>) {
+pub fn show_inventory(gs: &mut game::state::State, ctx: &mut Rltk) -> (Result, Option<Entity>) {
     let player_entity = gs.ecs.fetch::<Entity>();
     let names = gs.ecs.read_storage::<components::Name>();
     let backpack = gs.ecs.read_storage::<components::InBackpack>();
@@ -90,10 +87,7 @@ pub fn show_inventory(
             _ => {
                 let selection = rltk::letter_to_option(key);
                 if selection > -1 && selection < count as i32 {
-                    return (
-                        Result::Selected,
-                        Some(equippable[selection as usize]),
-                    );
+                    return (Result::Selected, Some(equippable[selection as usize]));
                 }
                 (Result::NoResponse, None)
             }
@@ -101,10 +95,7 @@ pub fn show_inventory(
     }
 }
 
-pub fn drop(
-    gs: &mut game::state::State,
-    ctx: &mut Rltk,
-) -> (Result, Option<Entity>) {
+pub fn drop(gs: &mut game::state::State, ctx: &mut Rltk) -> (Result, Option<Entity>) {
     let player_entity = gs.ecs.fetch::<Entity>();
     let names = gs.ecs.read_storage::<components::Name>();
     let backpack = gs.ecs.read_storage::<components::InBackpack>();
@@ -180,10 +171,7 @@ pub fn drop(
             _ => {
                 let selection = rltk::letter_to_option(key);
                 if selection > -1 && selection < count as i32 {
-                    return (
-                        Result::Selected,
-                        Some(equippable[selection as usize]),
-                    );
+                    return (Result::Selected, Some(equippable[selection as usize]));
                 }
                 (Result::NoResponse, None)
             }

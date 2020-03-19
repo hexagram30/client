@@ -1,9 +1,9 @@
 use crate::map;
 use rltk::RGB;
-use serde::{Serialize, Deserialize};
-use specs::prelude::*;
+use serde::{Deserialize, Serialize};
 use specs::error::NoError;
-use specs::saveload::{Marker, ConvertSaveload};
+use specs::prelude::*;
+use specs::saveload::{ConvertSaveload, Marker};
 use specs_derive::*;
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
@@ -56,7 +56,7 @@ pub struct WantsToMelee {
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct SufferDamage {
-    pub amount : Vec<i32>
+    pub amount: Vec<i32>,
 }
 
 #[derive(Clone, Component, Debug, Deserialize, Serialize)]
@@ -67,49 +67,49 @@ pub struct Consumable {}
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct Ranged {
-    pub range: i32
+    pub range: i32,
 }
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct InflictsDamage {
-    pub damage: i32
+    pub damage: i32,
 }
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct AreaOfEffect {
-    pub radius: i32
+    pub radius: i32,
 }
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct Confusion {
-    pub turns: i32
+    pub turns: i32,
 }
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct ProvidesHealing {
-    pub heal_amount: i32
+    pub heal_amount: i32,
 }
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct InBackpack {
-    pub owner: Entity
+    pub owner: Entity,
 }
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct WantsToPickupItem {
     pub collected_by: Entity,
-    pub item: Entity
+    pub item: Entity,
 }
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct WantsToUseItem {
     pub item: Entity,
-    pub target: Option<rltk::Point>
+    pub target: Option<rltk::Point>,
 }
 
 #[derive(Clone, Component, ConvertSaveload, Debug)]
 pub struct WantsToDropItem {
-    pub item: Entity
+    pub item: Entity,
 }
 
 // Serialization helper code. We need to implement ConvertSaveload for each type that contains an
@@ -120,5 +120,5 @@ pub struct SerializeMe;
 // Special component that exists to help serialize the game data
 #[derive(Clone, Component, Deserialize, Serialize)]
 pub struct SerializationHelper {
-    pub map: map::Map
+    pub map: map::Map,
 }

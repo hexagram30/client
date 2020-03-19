@@ -37,7 +37,11 @@ impl<'a> System<'a> for MeleeSystem {
                             "{} hits {}, for {} hp.",
                             &name.name, &target_name.name, damage
                         ));
-                        components::SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
+                        components::SufferDamage::new_damage(
+                            &mut inflict_damage,
+                            wants_melee.target,
+                            damage,
+                        );
                     }
                 }
             }

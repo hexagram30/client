@@ -15,13 +15,13 @@ pub fn spawn_ranged(ecs: &mut World, pos: components::Position, cfg: &config::It
             bg: rltk::RGB::named(cfg.bg_color),
             render_order: 2,
         })
-        .with(components::Name {
-            name: scroll_name,
-        })
+        .with(components::Name { name: scroll_name })
         .with(components::Item {})
-        .with(components::Consumable{})
-        .with(components::Ranged{ range: cfg.range.unwrap() })
-        .with(components::InflictsDamage{ damage: cfg.power })
+        .with(components::Consumable {})
+        .with(components::Ranged {
+            range: cfg.range.unwrap(),
+        })
+        .with(components::InflictsDamage { damage: cfg.power })
         .build();
 }
 
@@ -36,14 +36,16 @@ pub fn spawn_ranged_aoe(ecs: &mut World, pos: components::Position, cfg: &config
             bg: rltk::RGB::named(cfg.bg_color),
             render_order: 2,
         })
-        .with(components::Name {
-            name: scroll_name,
-        })
+        .with(components::Name { name: scroll_name })
         .with(components::Item {})
-        .with(components::Consumable{})
-        .with(components::Ranged{ range: cfg.range.unwrap() })
-        .with(components::InflictsDamage{ damage: cfg.power })
-        .with(components::AreaOfEffect{ radius: cfg.radius.unwrap() })
+        .with(components::Consumable {})
+        .with(components::Ranged {
+            range: cfg.range.unwrap(),
+        })
+        .with(components::InflictsDamage { damage: cfg.power })
+        .with(components::AreaOfEffect {
+            radius: cfg.radius.unwrap(),
+        })
         .build();
 }
 
@@ -58,12 +60,12 @@ pub fn spawn_ranged_confusion(ecs: &mut World, pos: components::Position, cfg: &
             bg: rltk::RGB::named(cfg.bg_color),
             render_order: 2,
         })
-        .with(components::Name {
-            name: scroll_name,
-        })
+        .with(components::Name { name: scroll_name })
         .with(components::Item {})
-        .with(components::Consumable{})
-        .with(components::Ranged{ range: cfg.range.unwrap() })
-        .with(components::Confusion{ turns: cfg.power })
+        .with(components::Consumable {})
+        .with(components::Ranged {
+            range: cfg.range.unwrap(),
+        })
+        .with(components::Confusion { turns: cfg.power })
         .build();
 }

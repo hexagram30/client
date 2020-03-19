@@ -15,11 +15,9 @@ pub fn spawn_health_potion(ecs: &mut World, pos: components::Position, cfg: &con
             bg: rltk::RGB::named(cfg.bg_color),
             render_order: 2,
         })
-        .with(components::Name {
-            name: potion_name,
-        })
+        .with(components::Name { name: potion_name })
         .with(components::Item {})
-        .with(components::Consumable{})
+        .with(components::Consumable {})
         .with(components::ProvidesHealing {
             heal_amount: cfg.power,
         })

@@ -1,5 +1,5 @@
 use cfglib;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use specs_derive::*;
 use std::fs;
@@ -138,7 +138,7 @@ impl AppConfig {
             Ok(mut c) => {
                 c.game.create_savegame_dir();
                 c
-            },
+            }
             Err(_) => panic!("Configuration error: check the config file"),
         }
     }
@@ -158,12 +158,10 @@ impl Game {
     pub fn savegame_path(&self) -> &str {
         match self.persistence.path.as_ref() {
             None => panic!("Couldn't get savegame path!"),
-            Some(r) => {
-                match r.to_str() {
-                    None => panic!("Couldn't get savegame path!"),
-                    Some(p) => p,
-                }
-            }
+            Some(r) => match r.to_str() {
+                None => panic!("Couldn't get savegame path!"),
+                Some(p) => p,
+            },
         }
     }
 }

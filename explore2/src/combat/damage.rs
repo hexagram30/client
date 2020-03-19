@@ -54,11 +54,17 @@ pub fn delete_the_dead(ecs: &mut World) {
 }
 
 impl components::SufferDamage {
-    pub fn new_damage(store: &mut WriteStorage<components::SufferDamage>, victim: Entity, amount: i32) {
+    pub fn new_damage(
+        store: &mut WriteStorage<components::SufferDamage>,
+        victim: Entity,
+        amount: i32,
+    ) {
         if let Some(suffering) = store.get_mut(victim) {
             suffering.amount.push(amount);
         } else {
-            let dmg = components::SufferDamage { amount: vec![amount] };
+            let dmg = components::SufferDamage {
+                amount: vec![amount],
+            };
             store.insert(victim, dmg).expect("Unable to insert damage");
         }
     }

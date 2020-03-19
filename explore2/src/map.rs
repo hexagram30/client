@@ -4,7 +4,7 @@ use crate::game;
 use crate::rect;
 use crate::rooms;
 use rltk::{Algorithm2D, BaseMap, Console, Point, RandomNumberGenerator, Rltk, RGB};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use specs;
 use specs::prelude::*;
 use std::cmp::{max, min};
@@ -29,7 +29,6 @@ pub struct Map {
     #[serde(skip_deserializing)]
     pub tile_content: Vec<Vec<Entity>>,
 }
-
 
 pub fn new(cfg: &config::AppConfig, gs: &mut game::state::State) -> Map {
     log::debug!("Setting up Map ...");

@@ -2,13 +2,14 @@ use crate::components;
 use crate::config;
 use crate::game::world;
 use crate::map;
-use specs::prelude::*;
-use specs::saveload::{SimpleMarker, SimpleMarkerAllocator, SerializeComponents, DeserializeComponents, MarkedBuilder};
 use specs::error::NoError;
+use specs::prelude::*;
+use specs::saveload::{
+    DeserializeComponents, MarkedBuilder, SerializeComponents, SimpleMarker, SimpleMarkerAllocator,
+};
+use std::fs;
 use std::fs::File;
 use std::path::Path;
-use std::fs;
-
 
 pub fn save(mut ecs: &mut World) {
     // Create helper
@@ -16,7 +17,7 @@ pub fn save(mut ecs: &mut World) {
     let mapcopy = ecs.get_mut::<map::Map>().unwrap().clone();
     let savehelper = ecs
         .create_entity()
-        .with(components::SerializationHelper{ map : mapcopy })
+        .with(components::SerializationHelper { map: mapcopy })
         .marked::<SimpleMarker<components::SerializeMe>>()
         .build();
 
@@ -43,5 +44,7 @@ pub fn load(mut ecs: &mut World) {
 pub fn delete(ecs: &World) {
     let cfg = ecs.fetch::<config::Game>();
     let savegame = cfg.savegame_path();
-    if Path::new(savegame).exists() { std::fs::remove_file(savegame).expect("Unable to delete file"); }
+    if Path::new(savegame).exists() {
+        std::fs::remove_file(savegame).expect("Unable to delete file");
+    }
 }

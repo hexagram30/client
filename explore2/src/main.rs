@@ -8,10 +8,10 @@ fn main() {
     let cfg = config::AppConfig::new();
     logger::new(&cfg);
     log::debug!("Using config: {:?}", cfg);
-    
+
     log::debug!("Setting up GUI ...");
     let game_gui = gui::new(&cfg.gui);
-    
+
     let title = cfg.game.title.clone();
     let context = rltk::RltkBuilder::simple(game_gui.width, game_gui.height)
         .with_title(title)
