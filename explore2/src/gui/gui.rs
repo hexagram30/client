@@ -2,6 +2,7 @@ use crate::components;
 use crate::config;
 use crate::game;
 use crate::gui::tooltips;
+use crate::map;
 use rltk::{Console, Rltk, RGB};
 use specs;
 use specs::prelude::*;
@@ -40,24 +41,35 @@ pub fn draw(ecs: &World, ctx: &mut Rltk) {
         RGB::named(gui.bg_color),
     );
 
+    let game_map = ecs.fetch::<map::Map>();
+    let depth = format!("Level depth: {}", game_map.depth);
+    // XXX Can we put these numeric values in config?
+    ctx.print_color(
+        2,
+        gui.map_area.height - 1,
+        RGB::named(rltk::YELLOW),
+        RGB::named(rltk::BLACK),
+        &depth,
+    );
+
     let combat_stats = ecs.read_storage::<components::CombatStats>();
     let players = ecs.read_storage::<components::Player>();
     for (_player, stats) in (&players, &combat_stats).join() {
         let health = format!(" HP: {} / {} ", stats.hp, stats.max_hp);
-        // XXX let's put this 12 into config ... need to look up API usage
+        // XXX let's calculate the column positions instead of hard-coding them
         ctx.print_color(
-            12,
+            20,
             gui.map_area.height - 1,
             // XXX add colors to config
             RGB::named(rltk::YELLOW),
             RGB::named(rltk::BLACK),
             &health,
         );
-        // XXX let's put the 28 and 51 into config ... need to look up API usage
+        // XXX let's calculate the column positions instead of hard-coding them
         ctx.draw_bar_horizontal(
-            28,
+            36,
             gui.map_area.height - 1,
-            51,
+            59,
             stats.hp,
             stats.max_hp,
             // XXX add colors to config

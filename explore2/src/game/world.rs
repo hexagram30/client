@@ -8,7 +8,7 @@ use specs;
 use specs::error::NoError;
 use specs::prelude::*;
 use specs::saveload::{
-    DeserializeComponents, MarkedBuilder, SerializeComponents, SimpleMarker, SimpleMarkerAllocator,
+    DeserializeComponents, SerializeComponents, SimpleMarker, SimpleMarkerAllocator,
 };
 use std::fs;
 
@@ -56,8 +56,8 @@ pub fn setup(cfg: config::AppConfig, gs: &mut game::state::State) {
     let character = player::character::new(&cfg, gs, &game_map);
     log::info!("Completed map setup");
 
-    log::debug!("Inserting configuration into component system ...");
-    gs.ecs.insert(cfg.game);
+    log::debug!("Inserting configurations into component system ...");
+    gs.ecs.insert(cfg);
     log::debug!("Inserting game log into component system ...");
     gs.ecs.insert(game_log);
     log::debug!("Inserting map into component system ...");
@@ -65,6 +65,7 @@ pub fn setup(cfg: config::AppConfig, gs: &mut game::state::State) {
     log::debug!("Inserting player into component system ...");
     gs.ecs.insert(character.location);
     gs.ecs.insert(character.entity);
+    log::debug!("Entering initial run state ...");
     gs.ecs.insert(game::state::RunState::PreRun);
     log::info!("Completed world setup");
 }

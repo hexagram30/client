@@ -83,6 +83,13 @@ pub fn input(gs: &mut game::state::State, ctx: &mut Rltk) -> game::state::RunSta
             VirtualKeyCode::I => return game::state::RunState::ShowInventory,
             VirtualKeyCode::L => return game::state::RunState::ShowDropItem, // let-go
 
+            // Entering/leaving map areas
+            VirtualKeyCode::Return => {
+                if character::try_next_level(&mut gs.ecs) {
+                    return game::state::RunState::NextLevel;
+                }
+            }
+
             // Main menu
             VirtualKeyCode::Escape => return game::state::RunState::ShowMainMenu,
 

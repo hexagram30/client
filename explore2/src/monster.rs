@@ -16,7 +16,7 @@ pub fn random(ecs: &mut World, start: Position, cfg: &config::Monsters) {
 }
 
 pub fn spawn(ecs: &mut World, start: Position, cfg: &config::Monsters, m: &config::Monster) {
-    log::debug!("Creating monster at {:?} ...", start);
+    log::trace!("Creating monster at {:?} ...", start);
     ecs.create_entity()
         .with(start)
         .with(Renderable {

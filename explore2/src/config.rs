@@ -16,11 +16,28 @@ pub struct Persistence {
     pub path: Option<PathBuf>,
 }
 
-#[derive(Clone, Component, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Game {
     pub title: String,
     pub welcome: String,
     pub persistence: Persistence,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Tile {
+    pub chr: Option<char>,
+    pub fg_color: (u8, u8, u8),
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Map {
+    pub default: Tile,
+    pub floor: Tile,
+    pub wall: Tile,
+    pub down_exit: Tile,
+    pub up_exit: Tile,
+    pub right_exit: Tile,
+    pub left_exit: Tile,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -120,9 +137,10 @@ pub struct Items {
     pub magic_missile_scroll: Item,
     pub confusion_scroll: Item,
 }
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Component, Debug, Deserialize)]
 pub struct AppConfig {
     pub game: Game,
+    pub map: Map,
     pub gui: Gui,
     pub items: Items,
     pub logging: LoggerOpts,

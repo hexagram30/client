@@ -90,3 +90,18 @@ pub fn get_item(ecs: &mut World) {
     }
   }
 }
+
+pub fn try_next_level(ecs: &mut World) -> bool {
+  let player_pos = ecs.fetch::<Point>();
+  let current_level = ecs.fetch::<map::Map>();
+  let player_idx = current_level.xy_idx(player_pos.x, player_pos.y);
+  if current_level.tiles[player_idx] == map::TileType::Exit(map::ExitDirection::Down) {
+    true
+  } else {
+    let mut gamelog = ecs.fetch_mut::<game::log::GameLog>();
+    gamelog
+      .entries
+      .push("There is no way down from here.".to_string());
+    false
+  }
+}

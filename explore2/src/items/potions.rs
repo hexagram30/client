@@ -6,7 +6,7 @@ use specs::prelude::*;
 
 pub fn spawn_health_potion(ecs: &mut World, pos: components::Position, cfg: &config::Item) {
     let potion_name = cfg.name.clone();
-    log::debug!("Creating '{}' at {:?} ...", potion_name, pos);
+    log::trace!("Creating '{}' at {:?} ...", potion_name, pos);
     ecs.create_entity()
         .with(pos)
         .with(components::Renderable {

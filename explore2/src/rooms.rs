@@ -18,7 +18,7 @@ pub fn spawn(ecs: &mut World, room: &rect::Rect, cfg: &config::AppConfig) {
         let num_monsters = rng.roll_dice(1, cfg.rooms.max_monsters + 2) - 3;
         let num_items = rng.roll_dice(1, cfg.rooms.max_items + 2) - 1;
 
-        log::debug!("Calculating monster locations ...");
+        log::debug!("Calculating monster locations in new room ...");
         for _i in 0..num_monsters {
             let mut added = false;
             while !added {
@@ -32,7 +32,7 @@ pub fn spawn(ecs: &mut World, room: &rect::Rect, cfg: &config::AppConfig) {
             }
         }
 
-        log::debug!("Calculating item locations ...");
+        log::debug!("Calculating item locations in new room ...");
         for _i in 0..num_items {
             let mut added = false;
             while !added {
@@ -47,7 +47,7 @@ pub fn spawn(ecs: &mut World, room: &rect::Rect, cfg: &config::AppConfig) {
         }
     }
 
-    log::debug!("Checking to see if room gets monsters ...");
+    log::trace!("Checking to see if new room gets monsters ...");
     for idx in monster_spawn_points.iter() {
         let x = *idx as i32 % cfg.gui.map_area.width;
         let y = *idx as i32 / cfg.gui.map_area.width;
@@ -55,7 +55,7 @@ pub fn spawn(ecs: &mut World, room: &rect::Rect, cfg: &config::AppConfig) {
         monster::random(ecs, pos, &cfg.monsters);
     }
 
-    log::debug!("Checking to see if room gets items ...");
+    log::trace!("Checking to see if new room gets items ...");
     for idx in item_spawn_points.iter() {
         let x = *idx as i32 % cfg.gui.map_area.width;
         let y = *idx as i32 / cfg.gui.map_area.width;

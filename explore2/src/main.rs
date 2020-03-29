@@ -7,7 +7,7 @@ use specs::prelude::*;
 fn main() {
     let cfg = config::AppConfig::new();
     logger::new(&cfg);
-    log::debug!("Using config: {:?}", cfg);
+    log::trace!("Using config: {:?}", cfg);
 
     log::debug!("Setting up GUI ...");
     let game_gui = gui::new(&cfg.gui);

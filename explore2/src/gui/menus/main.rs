@@ -21,7 +21,7 @@ pub enum Result {
 
 pub fn draw(gs: &mut game::state::State, ctx: &mut Rltk) -> Result {
     let save_exists = persistence::file_exists(&gs.ecs);
-    let cfg = gs.ecs.fetch::<config::Game>();
+    let cfg = gs.ecs.fetch::<config::AppConfig>().game.clone();
     let runstate = gs.ecs.fetch::<game::state::RunState>();
 
     ctx.print_color_centered(

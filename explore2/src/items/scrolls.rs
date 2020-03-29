@@ -6,7 +6,7 @@ use specs::prelude::*;
 
 pub fn spawn_ranged(ecs: &mut World, pos: components::Position, cfg: &config::Item) {
     let scroll_name = cfg.name.clone();
-    log::debug!("Creating '{}' at {:?} ...", scroll_name, pos);
+    log::trace!("Creating '{}' at {:?} ...", scroll_name, pos);
     ecs.create_entity()
         .with(pos)
         .with(components::Renderable {
@@ -27,7 +27,7 @@ pub fn spawn_ranged(ecs: &mut World, pos: components::Position, cfg: &config::It
 
 pub fn spawn_ranged_aoe(ecs: &mut World, pos: components::Position, cfg: &config::Item) {
     let scroll_name = cfg.name.clone();
-    log::debug!("Creating '{}' at {:?} ...", scroll_name, pos);
+    log::trace!("Creating '{}' at {:?} ...", scroll_name, pos);
     ecs.create_entity()
         .with(pos)
         .with(components::Renderable {
@@ -51,7 +51,7 @@ pub fn spawn_ranged_aoe(ecs: &mut World, pos: components::Position, cfg: &config
 
 pub fn spawn_ranged_confusion(ecs: &mut World, pos: components::Position, cfg: &config::Item) {
     let scroll_name = cfg.name.clone();
-    log::debug!("Creating '{}' at {:?} ...", scroll_name, pos);
+    log::trace!("Creating '{}' at {:?} ...", scroll_name, pos);
     ecs.create_entity()
         .with(pos)
         .with(components::Renderable {

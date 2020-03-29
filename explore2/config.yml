@@ -7,7 +7,7 @@ game:
 
 logging:
   colored: true
-  level: debug
+  level: trace
   report_caller: true
 
 gui:
@@ -20,6 +20,28 @@ gui:
     height: 90
   text_area:
     height: 6
+
+map:
+  default:
+    fg_color: [0,0,0]
+  floor:
+    chr: "."
+    fg_color: [0,127,127]
+  wall:
+    chr: "#"
+    fg_color: [0,255,0]
+  down_exit:
+    chr: "v"
+    fg_color: [0,255,255]
+  up_exit:
+    chr: "^"
+    fg_color: [0,255,255]
+  right_exit:
+    chr: ">"
+    fg_color: [0,255,255]
+  left_exit:
+    chr: "<"
+    fg_color: [0,255,255]
 
 npcs:
   count: 8

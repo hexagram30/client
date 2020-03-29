@@ -10,9 +10,18 @@ use specs::prelude::*;
 use std::cmp::{max, min};
 
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
+pub enum ExitDirection {
+    Down,
+    Up,
+    Left,
+    Right,
+}
+
+#[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum TileType {
     Wall,
     Floor,
+    Exit(ExitDirection),
 }
 
 #[derive(Default, Serialize, Deserialize, Clone)]
@@ -24,6 +33,7 @@ pub struct Map {
     pub revealed_tiles: Vec<bool>,
     pub visible_tiles: Vec<bool>,
     pub blocked: Vec<bool>,
+    pub depth: i32,
 
     #[serde(skip_serializing)]
     #[serde(skip_deserializing)]
@@ -32,8 +42,8 @@ pub struct Map {
 
 pub fn new(cfg: &config::AppConfig, gs: &mut game::state::State) -> Map {
     log::debug!("Setting up Map ...");
-    let game_map = Map::new_map_rooms_and_corridors(&cfg);
-    log::debug!("Created {} rooms.", game_map.rooms.len());
+    let game_map = Map::new_map_rooms_and_corridors(&cfg, 1);
+    log::info!("Created {} rooms.", game_map.rooms.len());
     for (i, room) in game_map.rooms.iter().skip(1).enumerate() {
         log::trace!("Setting up room {} ...", i);
         rooms::spawn(&mut gs.ecs, room, &cfg);
@@ -95,7 +105,7 @@ impl Map {
 
     /// Makes a new map using the algorithm from http://rogueliketutorials.com/tutorials/tcod/part-3/
     /// This gives a handful of random rooms and corridors joining them together.
-    pub fn new_map_rooms_and_corridors(cfg: &config::AppConfig) -> Map {
+    pub fn new_map_rooms_and_corridors(cfg: &config::AppConfig, map_depth: i32) -> Map {
         let width = cfg.gui.map_area.width;
         let height = cfg.gui.map_area.height;
         let tile_count = width * height;
@@ -108,6 +118,7 @@ impl Map {
             visible_tiles: vec![false; tile_count as usize],
             blocked: vec![false; tile_count as usize],
             tile_content: vec![Vec::new(); tile_count as usize],
+            depth: map_depth,
         };
 
         let mut rng = RandomNumberGenerator::new();
@@ -142,6 +153,9 @@ impl Map {
                 map.rooms.push(new_room);
             }
         }
+        let exit_position = map.rooms[map.rooms.len() - 1].center();
+        let exit_idx = map.xy_idx(exit_position.0, exit_position.1);
+        map.tiles[exit_idx] = TileType::Exit(ExitDirection::Down);
 
         map
     }
@@ -205,22 +219,39 @@ pub fn draw(ecs: &specs::World, ctx: &mut Rltk) {
         // Render a tile depending upon the tile type
 
         if game_map.revealed_tiles[idx] {
+            let cfg = ecs.fetch::<config::Map>();
             let glyph;
             let mut fg;
             match tile {
                 TileType::Floor => {
-                    glyph = rltk::to_cp437('.');
-                    fg = RGB::from_f32(0.0, 0.5, 0.5);
+                    glyph = rltk::to_cp437(cfg.floor.chr.unwrap());
+                    fg = RGB::named(cfg.floor.fg_color);
                 }
                 TileType::Wall => {
-                    glyph = rltk::to_cp437('#');
-                    fg = RGB::from_f32(0., 1.0, 0.);
+                    glyph = rltk::to_cp437(cfg.wall.chr.unwrap());
+                    fg = RGB::named(cfg.wall.fg_color);
+                }
+                TileType::Exit(ExitDirection::Down) => {
+                    glyph = rltk::to_cp437(cfg.down_exit.chr.unwrap());
+                    fg = RGB::named(cfg.down_exit.fg_color);
+                }
+                TileType::Exit(ExitDirection::Up) => {
+                    glyph = rltk::to_cp437(cfg.up_exit.chr.unwrap());
+                    fg = RGB::named(cfg.up_exit.fg_color);
+                }
+                TileType::Exit(ExitDirection::Right) => {
+                    glyph = rltk::to_cp437(cfg.right_exit.chr.unwrap());
+                    fg = RGB::named(cfg.right_exit.fg_color);
+                }
+                TileType::Exit(ExitDirection::Left) => {
+                    glyph = rltk::to_cp437(cfg.left_exit.chr.unwrap());
+                    fg = RGB::named(cfg.left_exit.fg_color);
                 }
             }
             if !game_map.visible_tiles[idx] {
                 fg = fg.to_greyscale()
             }
-            ctx.set(x, y, fg, RGB::from_f32(0., 0., 0.), glyph);
+            ctx.set(x, y, fg, RGB::named(cfg.default.fg_color), glyph);
         }
 
         // Move the coordinates
