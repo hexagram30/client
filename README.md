@@ -1,27 +1,43 @@
-# tech-reflects
+# client
 
-*Project for Experiential Reflections on Technology*
+[![][build-badge]][build]
+[![][crate-badge]][crate]
+[![][tag-badge]][tag]
+[![][docs-badge]][docs]
+
+*An ASCII client for exploring hexagram30 worlds, based upon rustrogueliketutorial*
+
+[![Project Logo][logo]][logo-large]
+
+## Project Status
+
+* [x] Phase 1: Rust roguelike tutorial basics
+* [x] Phase 2: Rust roguelike tutorial intermediate steps, highly-customized
+* [ ] Phase 3: Rust roguelike tutorial advanced
+* [ ] Phase 4: Persisted levels to disk
+* [ ] Phase 5: Level generation from world biome data
 
 ## Background
 
-I have an open source project called [Hexagram30](https://github.com/hexagram30) the purpose of which is to create the many components necessary to support any number of multi-user, on-line text-based adventure games such as the classic MUDs and MUSHes but with the modern capabilities of distributed systems, high-availability, and fault-tolerance. Much of the work done to date has focused on the ability to connect to a remote session, to store data in specific formats, to generate maps, track time, and use procedural weather data to generate biomes automatically for new worlds.
+This repo started as part of a UMass UWW course, Spring Semester 2020 (UWW 310:
+Experiential Reflections on Technology), a semester's project whose aim was to
+provide a means of exploring the generated worlds of Hexagram30 via a roguelike
+ASCII character interface. The code follows the 
+[Rust roguelike tutorial][rustrogueliketutorial], though differs in
+configuration and code structure (and will contnue to diverge more, as time
+passes).
 
-However, with all the work that I have done in the various code repositories for this project, there is nothing I can currently use to “walk around” in a generated world, nothing that allows me to move a character through the latitudes and longitudes of new worlds with updated textual descriptions that could be presented to the user as the land, vegetation, weather, and seasons change.
-
-I would like to explore the foundations that would be necessary in order to create such a tool, with the hope that after a few iterations, I could determine the feasibility of creating a full-blown client for the Hexagram30 distributed game framework.
-
-## Project
-
-* [Exploration 1][explore1]: [![][explore1-build-badge]][explore1-build]
-* [Exploration 2][explore2]: [![][explore2-build-badge]][explore2-build]
-* [Final][final]
 
 <!-- Named page links below: /-->
 
-[explore1]: explore1/
-[explore2]: explore2/
-[final]: final/
-[explore1-build]: https://github.com/oubiwann/tech-reflects/actions?query=workflow%3Aexplore1-build+
-[explore1-build-badge]: https://github.com/oubiwann/tech-reflects/workflows/explore1-build/badge.svg
-[explore2-build]: https://github.com/oubiwann/tech-reflects/actions?query=workflow%3Aexplore2-build+
-[explore2-build-badge]: https://github.com/oubiwann/tech-reflects/workflows/explore2-build/badge.svg
+[logo]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-2-long-with-text-x695.png
+[logo-large]: https://raw.githubusercontent.com/hexagram30/resources/master/branding/logo/h30-logo-2-long-with-text-x3440.png
+[build]: https://github.com/hexagram30/client/actions?query=workflow%3Abuild+
+[build-badge]: https://github.com/hexagram30/client/workflows/build/badge.svg
+[crate]: https://crates.io/crates/hxgm30-client
+[crate-badge]: https://img.shields.io/crates/v/hxgm30-client.svg
+[docs]: https://docs.rs/hxgm30-client/
+[docs-badge]: https://img.shields.io/badge/rust-documentation-blue.svg
+[tag]: https://github.com/hexagram30/client/tags
+[tag-badge]: https://img.shields.io/github/v/tag/hexagram30/client.svg?sort=semver
+[rustrogueliketutorial]: http://bfnightly.bracketproductions.com/rustbook/chapter_0.html

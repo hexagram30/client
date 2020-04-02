@@ -1,11 +1,14 @@
 [package]
-name = "explore2"
-version = "0.2.0"
-authors = ["Duncan McGreggor <oubiwann@gmail.com>"]
+name = "hxgm30-client"
+description = "An ASCII client for exploring hexagram30 worlds, based upon rustrogueliketutorial"
+version = "0.3.0-alpha.01"
+authors = ["Duncan McGreggor <duncan@cnbb.games>"]
 edition = "2018"
+license = "Apache-2.0"
+repository = "https://github.com/hexagram30/client"
 
 [lib]
-name = "explore2"
+name = "hxgm30client"
 
 [dependencies]
 config = "0.10.1"

@@ -1,7 +1,7 @@
-use explore2::config;
-use explore2::game;
-use explore2::gui;
-use explore2::logger;
+use hxgm30client::config;
+use hxgm30client::game;
+use hxgm30client::gui;
+use hxgm30client::logger;
 use specs::prelude::*;
 
 fn main() {
