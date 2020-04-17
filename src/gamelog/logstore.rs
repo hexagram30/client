@@ -1,12 +1,12 @@
-use std::sync::Mutex;
 use super::LogFragment;
 use rltk::prelude::*;
+use std::sync::Mutex;
 
 lazy_static! {
-    static ref LOG : Mutex<Vec<Vec<LogFragment>>> = Mutex::new(Vec::new());
+    static ref LOG: Mutex<Vec<Vec<LogFragment>>> = Mutex::new(Vec::new());
 }
 
-pub fn append_entry(fragments : Vec<LogFragment>) {
+pub fn append_entry(fragments: Vec<LogFragment>) {
     LOG.lock().unwrap().push(fragments);
 }
 
@@ -32,7 +32,7 @@ pub fn clone_log() -> Vec<Vec<crate::gamelog::LogFragment>> {
     LOG.lock().unwrap().clone()
 }
 
-pub fn restore_log(log : &mut Vec<Vec<crate::gamelog::LogFragment>>) {
+pub fn restore_log(log: &mut Vec<Vec<crate::gamelog::LogFragment>>) {
     LOG.lock().unwrap().clear();
     LOG.lock().unwrap().append(log);
 }

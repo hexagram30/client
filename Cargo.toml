@@ -1,12 +1,14 @@
 [package]
-name = "chapter-73-systems"
+name = "hxgm30-client"
+description = "An ASCII client for exploring hexagram30 worlds, based upon rustrogueliketutorial"
 version = "0.4.0"
 authors = ["Herbert Wolverson <herberticus@gmail.com>", "Duncan McGreggor <duncan@cnbb.games>"]
 license = "MIT"
 repository = "https://github.com/hexagram30/client"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "hxgm30client"
 
 [dependencies]
 rltk = { version = "0.7.0", features = ["serde"] }
