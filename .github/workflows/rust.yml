@@ -1,23 +1,26 @@
-name: Rust
+name: build
 
 on: [push]
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: cargo build --verbose
+      run: cargo build
     - name: Run tests
-      run: cargo test --verbose
-    - name: Check benchmarks
-      run: cargo check --benches
-    - name: Check examples
-      if: matrix.os != 'windows-latest'
-      run: |
-        cargo check --all
+      run: cargo test
+    - name: Notify CI/CD Slack Channel
+      uses: innocarpe/actions-slack@v1
+      with:
+        status: ${{ job.status }}
+        success_text: '✅ Build for ${{ github.repository }} succeeded! 😄🌈🐴🚢🐿 (commit id: ${{ github.sha }})'
+        failure_text: '❌ Build for ${{ github.repository }} failed! 🤬💣🔥🚒 (commit id: ${{ github.sha }})'
+        cancelled_text: '🚧 Build for ${{ github.repository }} was cancelled ... 😯🦡 (commit id: ${{ github.sha }})'
+      env:
+        GITHUB_TOKEN: ${{ secrets.CICD_BOT_TOKEN }}
+        SLACK_WEBHOOK_URL: ${{ secrets.CICD_BOT_WEBHOOK }}
+      if: always()
