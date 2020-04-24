@@ -1,16 +1,18 @@
-use crate::map::Map;
-use specs::prelude::*;
-use std::collections::{HashSet, VecDeque};
-use std::sync::Mutex;
 mod damage;
-mod targeting;
-pub use targeting::*;
 mod hunger;
 mod movement;
 mod particles;
+mod targeting;
+pub use targeting::*;
 mod triggers;
+
 use crate::components::AttributeBonus;
+use crate::map::Map;
+
 use rltk::Point;
+use specs::prelude::*;
+use std::collections::{HashSet, VecDeque};
+use std::sync::Mutex;
 
 lazy_static! {
     pub static ref EFFECT_QUEUE: Mutex<VecDeque<EffectSpawner>> = Mutex::new(VecDeque::new());

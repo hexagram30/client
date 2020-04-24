@@ -1,5 +1,6 @@
 use crate::components::{Equipped, InBackpack, Position};
 use crate::map::Map;
+
 use specs::prelude::*;
 
 pub fn entity_position(ecs: &World, target: Entity) -> Option<i32> {

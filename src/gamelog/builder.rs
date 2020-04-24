@@ -1,4 +1,6 @@
-use super::{append_entry, LogFragment};
+use crate::gamelog::LogFragment;
+use logstore::append_entry;
+
 use rltk::prelude::*;
 
 pub struct Logger {

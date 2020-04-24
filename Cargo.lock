@@ -232,19 +232,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "chapter-73-systems"
-version = "0.4.0"
-dependencies = [
- "lazy_static",
- "regex",
- "rltk",
- "serde",
- "serde_json",
- "specs",
- "specs-derive",
-]
-
-[[package]]
 name = "cloudabi"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -630,6 +617,19 @@ checksum = "93a1bb8316a44459a7d14253c4d28dd7395cbd23cc04a68c46e851b8e46d64b1"
 dependencies = [
  "atom",
  "rayon",
+]
+
+[[package]]
+name = "hxgm30-client"
+version = "0.4.0"
+dependencies = [
+ "lazy_static",
+ "regex",
+ "rltk",
+ "serde",
+ "serde_json",
+ "specs",
+ "specs-derive",
 ]
 
 [[package]]

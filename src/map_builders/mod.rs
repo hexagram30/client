@@ -1,4 +1,10 @@
-use super::{spawner, Map, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER};
+use crate::components::*;
+use crate::game::state::*;
+use crate::map::tiletype::*;
+use crate::map::*;
+use crate::rect::Rect;
+use crate::spawner;
+
 use specs::prelude::*;
 mod area_ending_point;
 mod area_starting_points;

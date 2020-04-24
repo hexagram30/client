@@ -1,4 +1,3 @@
-use super::*;
 use crate::components::{HungerClock, HungerState};
 use specs::prelude::*;
 

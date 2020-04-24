@@ -1,4 +1,5 @@
-use super::LogFragment;
+use crate::gamelog::LogFragment;
+
 use rltk::prelude::*;
 use std::sync::Mutex;
 

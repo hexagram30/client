@@ -1,4 +1,3 @@
-use super::*;
 use crate::components::{
     Attributes, Confusion, DamageOverTime, Duration, EquipmentChanged, Name, Player, Pools,
     SerializeMe, Skills, Slow, StatusEffect,

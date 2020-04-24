@@ -1,5 +1,6 @@
-use super::{menu_box, menu_option};
-use crate::State;
+use crate::game::state::State;
+use crate::gui::menus::{menu_box, menu_option};
+
 use rltk::prelude::*;
 
 #[derive(PartialEq, Copy, Clone)]

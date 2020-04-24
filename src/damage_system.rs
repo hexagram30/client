@@ -1,6 +1,8 @@
 extern crate specs;
-use super::{Equipped, InBackpack, LootTable, Name, Player, Pools, Position, RunState};
 use specs::prelude::*;
+
+pub use crate::game::state::*;
+pub use crate::player::*;
 
 pub fn delete_the_dead(ecs: &mut World) {
     let mut dead: Vec<Entity> = Vec::new();

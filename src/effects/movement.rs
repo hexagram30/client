@@ -1,4 +1,3 @@
-use super::*;
 use crate::components::ApplyTeleport;
 use specs::prelude::*;
 

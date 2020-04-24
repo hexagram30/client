@@ -1,6 +1,5 @@
-use super::*;
 use crate::components::*;
-use crate::RunState;
+use crate::game::state::RunState;
 
 pub fn item_trigger(creator: Option<Entity>, item: Entity, targets: &Targets, ecs: &mut World) {
     // Check charges
